@@ -10,7 +10,7 @@ KrakenDSPDistortionAudioProcessorEditor::KrakenDSPDistortionAudioProcessorEditor
     setSize (400, 300);
     
     addAndMakeVisible(typeSlider);
-    typeSlider.setRange(0, 1.0f, 0.01f);
+    typeSlider.setRange(0.0f, 1.0f, 0.2f);
     typeSlider.setTextValueSuffix(" Type Select");
     typeSlider.addListener(this);
     typeSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "TYPESELECT", typeSlider);
@@ -63,9 +63,7 @@ void KrakenDSPDistortionAudioProcessorEditor::paint (juce::Graphics& g)
 
 void KrakenDSPDistortionAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
 {
-    typeSlider.setRange(0, audioProcessor.getTypeCount());
-    
-    audioProcessor.distortion.setType(static_cast<int>(typeSlider.getValue()));
+    audioProcessor.distortion.setType(static_cast<int>(0.001f + typeSlider.getValue() * static_cast<float>(audioProcessor.distortion.getTypes().size() - 1)));
     
     audioProcessor.distortion.setControl(0, controlSlider.getValue());
     

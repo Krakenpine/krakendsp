@@ -3,7 +3,7 @@
 
 KrakenDSPDistortionAudioProcessor::KrakenDSPDistortionAudioProcessor(): apvts(*this, nullptr, juce::Identifier ("KrakenDSP Distortion"),
 {
-    std::make_unique<juce::AudioParameterFloat>("TYPESELECT", "Type select", 0.0f, 1.0f, 0.01f),
+    std::make_unique<juce::AudioParameterFloat>("TYPESELECT", "Type select", 0.0f, 1.0f, 0.2f),
     std::make_unique<juce::AudioParameterFloat>("CONTROL0", "Control 0", 0.0f, 1.0f, 0.000001f),
 })
 {
@@ -118,6 +118,27 @@ bool KrakenDSPDistortionAudioProcessor::isBusesLayoutSupported (const BusesLayou
 
 void KrakenDSPDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+
+    if (hasLoadedState && !hasLoaded) {
+        hasLoaded = true;
+        
+        auto* parameterGain = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("CONTROL0"));
+        if (parameterGain) {
+            parameterGain->setValueNotifyingHost(parameterGain->convertTo0to1(distortion.getControlValueRaw(0)));
+        }
+            
+        auto* parameterType = apvts.getParameter("TYPESELECT");
+        if (parameterType) {
+            parameterType->setValueNotifyingHost(parameterType->convertTo0to1(static_cast<float>(distortion.getType().typeID)/static_cast<float>(distortion.getTypes().size()-1)));
+        }
+
+        if (auto* editor = getActiveEditor())
+        {
+            editor->repaint(); // Request a repaint of the editor
+        }
+
+    }
+
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -158,18 +179,26 @@ juce::AudioProcessorEditor* KrakenDSPDistortionAudioProcessor::createEditor()
     return new KrakenDSPDistortionAudioProcessorEditor (*this);
 }
 
-//==============================================================================
 void KrakenDSPDistortionAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    destData.setSize(16);
+    float gain = distortion.getControlValueRaw(0);
+    int typeID = distortion.getType().typeID;
+    destData.insert(&gain, sizeof(float), 0);
+    destData.insert(&typeID, sizeof(int), sizeof(float));
 }
 
 void KrakenDSPDistortionAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    float gain;
+    int typeID;
+    std::memcpy(&gain, data, sizeof(float));
+    std::memcpy(&typeID, static_cast<const char*>(data) + sizeof(float), sizeof(int));
+
+    distortion.setControl(0, gain);
+    distortion.setType(typeID);
+
+    hasLoadedState = true;
 }
 
 //==============================================================================
