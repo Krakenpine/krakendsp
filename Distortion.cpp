@@ -39,7 +39,7 @@ float krakendsp::Distortion::process(float sample) {
             outSample = processRaw(sample);
             break;
         case 1:
-            outSample = processHardClip(sample);
+            outSample = processHardClipNonAliased(sample);
             break;
         case 2:
             outSample = processHardClip(sample);
@@ -68,12 +68,12 @@ krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
             outSample.right = processRaw(sample.right);
             break;
         case 1:
-            outSample.left = processHardClip(sample.left);
-            outSample.right = processHardClip(sample.right);
+            outSample.left = processSoftClip(sample.left);
+            outSample.right = processSoftClip(sample.right);
             break;
         case 2:
-            outSample.left = processHardClip(sample.left);
-            outSample.right = processHardClip(sample.right);
+            outSample.left = processHardClipNonAliased(sample.left);
+            outSample.right = processHardClipNonAliased(sample.right);
             break;
         case 3:
             outSample.left = processHardClip(sample.left);
@@ -161,6 +161,21 @@ float krakendsp::Distortion::processClean(float input) {
     return sample;
 }
 
+float krakendsp::Distortion::processSoftClip(float input) {
+    float sample = input * gain * 10.0f;
+    if (sample < -3.f) { sample = -1.f; }
+    else if (sample > 3.f) { sample = 1.f; }
+    else { sample = sample * (27.f + sample*sample) / (27.f + sample * sample * 9.f); }
+
+    sample = sample * gain * 10.0f;
+    
+    if (sample < -3.f) { sample = -1.f; }
+    else if (sample > 3.f) { sample = 1.f; }
+    else { sample = sample * (27.f + sample*sample) / (27.f + sample * sample * 9.f); }
+    
+    return sample;
+}
+
 float krakendsp::Distortion::processHardClip(float input) {
     float sample = input * gain * gain * gain * 1000.0f;
 
@@ -171,6 +186,56 @@ float krakendsp::Distortion::processHardClip(float input) {
         sample = -1;
     }
     return sample;
+}
+
+float krakendsp::Distortion::processHardClipNonAliased(float input) {
+    float sample = input * gain * gain * gain * 1000.0f;
+
+    float sample0 = 0.75f * prevValue + 0.25f * input;
+    float sample1 = 0.50f * prevValue + 0.50f * input;
+    float sample2 = 0.25f * prevValue + 0.75f * input;
+    float sample3 = input;
+
+    float realGain = gain * gain * gain * 1000.0f;
+
+    sample0 *= realGain;
+    sample1 *= realGain;
+    sample2 *= realGain;
+    sample3 *= realGain;
+
+
+    if (sample0 < -3.f) { sample0 = -1.f; }
+    else if (sample0 > 3.f) { sample0 = 1.f; }
+    else { sample0 = sample0 * (27.f + sample0*sample0) / (27.f + sample0 * sample0 * 9.f); }
+
+    if (sample1 < -3.f) { sample1 = -1.f; }
+    else if (sample1 > 3.f) { sample1 = 1.f; }
+    else { sample1 = sample1 * (27.f + sample1*sample1) / (27.f + sample1 * sample1 * 9.f); }
+
+    if (sample2 < -3.f) { sample2 = -1.f; }
+    else if (sample2 > 3.f) { sample2 = 1.f; }
+    else { sample2 = sample2 * (27.f + sample2*sample2) / (27.f + sample2 * sample2 * 9.f); }
+
+    if (sample3 < -3.f) { sample3 = -1.f; }
+    else if (sample3 > 3.f) { sample3 = 1.f; }
+    else { sample3 = sample3 * (27.f + sample3*sample3) / (27.f + sample3 * sample3 * 9.f); }
+
+    prevValue = input;
+
+    float alpha = 3.14f * 18000.0f * (1.0f / (4.0f * samplerate));
+    float beta = 1.0f - alpha;
+
+    float output0 = ((beta)/(1+alpha))*prevOutput + ((alpha)/(1+alpha))*(sample0 + prevFiltInput);
+    float output1 = ((beta)/(1+alpha))*output0 + ((alpha)/(1+alpha))*(sample1 + sample0);
+    float output2 = ((beta)/(1+alpha))*output1 + ((alpha)/(1+alpha))*(sample2 + sample1);
+    float output3 = ((beta)/(1+alpha))*output2 + ((alpha)/(1+alpha))*(sample3 + sample2);
+
+    float output = 0.25f * output0 + 0.25f * output1 + 0.25f * output2 + 0.25f * output3;
+
+    prevFiltInput = sample3;
+    prevOutput = output;
+
+    return output;
 }
 
 float krakendsp::Distortion::processWavefolder(float input) {

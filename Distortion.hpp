@@ -54,7 +54,7 @@ namespace krakendsp
             };
             std::vector<krakendsp::FXSubType> types = {
                 krakendsp::FXSubType{"Raw", 0},
-                krakendsp::FXSubType{"Overdrive", 1},
+                krakendsp::FXSubType{"Softclip", 1},
                 krakendsp::FXSubType{"Hardclip", 2},
                 krakendsp::FXSubType{"MetalZone", 3},
                 krakendsp::FXSubType{"Wavefolder", 4},
@@ -63,8 +63,15 @@ namespace krakendsp
 
             float processRaw(float input);
             float processClean(float input);
+            float processSoftClip(float input);
             float processHardClip(float input);
             float processWavefolder(float input);
+
+            float processHardClipNonAliased(float input);
+
+            float prevValue = 0;
+            float prevOutput = 0;
+            float prevFiltInput = 0;
     };
 }
 

@@ -50,6 +50,8 @@ public:
     int cunter = 0;
 
     bool hasUpdatedGui = false;
+    bool hasLoaded = false;
+    bool hasLoadedState = false;
     
     juce::String getFxName() const
     {
