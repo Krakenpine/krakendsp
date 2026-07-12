@@ -20,7 +20,19 @@ KrakenDSPDistortionAudioProcessorEditor::KrakenDSPDistortionAudioProcessorEditor
     controlSlider.setTextValueSuffix(" Control");
     controlSlider.addListener(this);
     controlSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "CONTROL0", controlSlider);
+
+    addAndMakeVisible(oversampleSlider);
+    oversampleSlider.setRange(0.0f, 1.0f, 0.1f);
+    oversampleSlider.setTextValueSuffix(" Oversample");
+    oversampleSlider.addListener(this);
+    oversampleSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "OVERSAMPLE", oversampleSlider);
     
+    addAndMakeVisible(oversampleInterpolationSlider);
+    oversampleInterpolationSlider.setRange(0.0f, 1.0f, 0.1f);
+    oversampleInterpolationSlider.setTextValueSuffix(" Oversample");
+    oversampleInterpolationSlider.addListener(this);
+    oversampleInterpolationSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "OSINTERPOLATION", oversampleInterpolationSlider);
+
 }
 
 KrakenDSPDistortionAudioProcessorEditor::~KrakenDSPDistortionAudioProcessorEditor()
@@ -58,6 +70,21 @@ void KrakenDSPDistortionAudioProcessorEditor::paint (juce::Graphics& g)
     controlSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, textBoxWidth, 20);
     controlSlider.setBounds(sliderLeft, y, getWidth() - sliderLeft - 10, 20);
 
+    auto oversampleValue = audioProcessor.distortion.getOversample();
+    juce::String oversampleText = " Oversample: " + juce::String(oversampleValue);
+    oversampleSlider.setTextValueSuffix(oversampleText);
+    oversampleSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, textBoxWidth, 20);
+    oversampleSlider.setBounds(sliderLeft, y + 50, getWidth() - sliderLeft - 10, 20);
+
+    auto oversampleInterpolationValue = audioProcessor.distortion.getInterpolationUpsampleMode();
+    juce::String oversampleInterpolationText = " Upsample mode: filtered";
+    if (oversampleInterpolationValue) {
+        oversampleInterpolationText = " Upsample mode: interpolated";
+    }
+    oversampleInterpolationSlider.setTextValueSuffix(oversampleInterpolationText);
+    oversampleInterpolationSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, textBoxWidth, 20);
+    oversampleInterpolationSlider.setBounds(sliderLeft, y + 100, getWidth() - sliderLeft - 10, 20);
+
 }
 
 
@@ -66,6 +93,10 @@ void KrakenDSPDistortionAudioProcessorEditor::sliderValueChanged (juce::Slider* 
     audioProcessor.distortion.setType(static_cast<int>(0.001f + typeSlider.getValue() * static_cast<float>(audioProcessor.distortion.getTypes().size() - 1)));
     
     audioProcessor.distortion.setControl(0, controlSlider.getValue());
+
+    audioProcessor.distortion.setOversample(static_cast<size_t>((oversampleSlider.getValue() + 0.001f) * 7.0f) + 1.0f);
+
+    audioProcessor.distortion.setInterpolationUpsampleMode(oversampleInterpolationSlider.getValue() > 0.5f);
     
     repaint();
 }
