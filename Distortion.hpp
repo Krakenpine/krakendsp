@@ -165,12 +165,7 @@ namespace krakendsp
             std::array<float, 256> aa8xOutBuffer = {0.0f};
             size_t aa8xOutBufferIndex = 0;
 
-            void applyFilterTo2xInBuffer();
-            void applyFilterTo4xInBuffer();
-            void applyFilterTo8xInBuffer();
-            void applyFilterTo2xOutBuffer();
-            void applyFilterTo4xOutBuffer();
-            void applyFilterTo8xOutBuffer();
+            void applyFilterToBuffer(bool inBuffer);
 
             void applyInterpolationTo2xInBuffer(float sample);
             void applyInterpolationTo4xInBuffer(float sample);
