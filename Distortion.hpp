@@ -83,24 +83,17 @@ namespace krakendsp
                 return samplerate * static_cast<float>(oversample);
             }
 
-            std::array<float, 2> oversample2xBuffer = {0.0f, 0.0f};
-            std::array<float, 4> oversample4xBuffer = {0.0f, 0.0f, 0.0f, 0.0f};
-            std::array<float, 8> oversample8xBuffer = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+            void fill2xOversampleBufferMono(float input);
+            void fill4xOversampleBufferMono();
+            void fill8xOversampleBufferMono();
+            void decimate4xOversampleBufferMono();
+            void decimate2xOversampleBufferMono();
 
-            void fill2xOversampleBuffer(float input);
-            void fill4xOversampleBuffer();
-            void fill8xOversampleBuffer();
-            void decimate4xOversampleBuffer();
-            void decimate2xOversampleBuffer();
-
-            float prevValue = 0;
-            float prevOutput = 0;
-            float prevFiltInput = 0;
-
-            float prevFilt1Input = 0;
-            float prevFilt1Output = 0;
-            float prevFilt2Input = 0;
-            float prevFilt2Output = 0;
+            void fill2xOversampleBufferStereo(Stereo input);
+            void fill4xOversampleBufferStereo();
+            void fill8xOversampleBufferStereo();
+            void decimate4xOversampleBufferStereo();
+            void decimate2xOversampleBufferStereo();
 
             const std::array<float, 47> aaFilterCoeffs = {
                 -0.001126702003683413,
@@ -152,36 +145,56 @@ namespace krakendsp
                 -0.001126702003683414
             };
 
-            std::array<float, 256> aa2xInBuffer = {0.0f};
-            size_t aa2xInBufferIndex = 0;
-            std::array<float, 256> aa4xInBuffer = {0.0f};
-            size_t aa4xInBufferIndex = 0;
-            std::array<float, 256> aa8xInBuffer = {0.0f};
-            size_t aa8xInBufferIndex = 0;
-            std::array<float, 256> aa2xOutBuffer = {0.0f};
-            size_t aa2xOutBufferIndex = 0;
-            std::array<float, 256> aa4xOutBuffer = {0.0f};
-            size_t aa4xOutBufferIndex = 0;
-            std::array<float, 256> aa8xOutBuffer = {0.0f};
-            size_t aa8xOutBufferIndex = 0;
+            std::array<float, 256> aa2xInBufferL = {0.0f};
+            size_t aa2xInBufferIndexL = 0;
+            std::array<float, 256> aa4xInBufferL = {0.0f};
+            size_t aa4xInBufferIndexL = 0;
+            std::array<float, 256> aa8xInBufferL = {0.0f};
+            size_t aa8xInBufferIndexL = 0;
+            std::array<float, 256> aa2xOutBufferL = {0.0f};
+            size_t aa2xOutBufferIndexL = 0;
+            std::array<float, 256> aa4xOutBufferL = {0.0f};
+            size_t aa4xOutBufferIndexL = 0;
+            std::array<float, 256> aa8xOutBufferL = {0.0f};
+            size_t aa8xOutBufferIndexL = 0;
+            std::array<float, 256> aa2xInBufferR = {0.0f};
+            size_t aa2xInBufferIndexR = 0;
+            std::array<float, 256> aa4xInBufferR = {0.0f};
+            size_t aa4xInBufferIndexR = 0;
+            std::array<float, 256> aa8xInBufferR = {0.0f};
+            size_t aa8xInBufferIndexR = 0;
+            std::array<float, 256> aa2xOutBufferR = {0.0f};
+            size_t aa2xOutBufferIndexR = 0;
+            std::array<float, 256> aa4xOutBufferR = {0.0f};
+            size_t aa4xOutBufferIndexR = 0;
+            std::array<float, 256> aa8xOutBufferR = {0.0f};
+            size_t aa8xOutBufferIndexR = 0;
 
-            void applyFilterToBuffer(bool inBuffer);
+            void applyFilterToBufferMono(bool inBuffer);
+            void applyFilterToBufferStereo(bool inBuffer);
 
             void applyInterpolationTo2xInBuffer(float sample);
             void applyInterpolationTo4xInBuffer(float sample);
             void applyInterpolationTo8xInBuffer(float sample);
+            void applyInterpolationTo2xInBuffer(Stereo sample);
+            void applyInterpolationTo4xInBuffer(Stereo sample);
+            void applyInterpolationTo8xInBuffer(Stereo sample);
 
-            float previousSample = 0.0f;
+            float previousSampleL = 0.0f;
+            float previousSampleR = 0.0f;
 
             const int halfFilterSize = static_cast<int>(aaFilterCoeffs.size() / 2);
 
             bool interpolationUpsample = false;
 
-            std::array<float, 8> upsampleBuffer = {0.0f};
+            std::array<float, 8> upsampleBufferL = {0.0f};
+            std::array<float, 8> upsampleBufferR = {0.0f};
             size_t upsampleBufferLength = 1;
 
             void fillUpSampleBuffer(float sample);
-            float downsample();
+            void fillUpSampleBuffer(Stereo sample);
+            float downsampleMono();
+            Stereo downsampleStereo();
     };
 }
 

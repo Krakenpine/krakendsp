@@ -85,12 +85,12 @@ krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
             outSample.right = outSample.left;
             break;
         case 2:
-            fillUpSampleBuffer(sample.left);
+            fillUpSampleBuffer(sample);
             for (size_t i = 0; i < upsampleBufferLength; i++) {
-                upsampleBuffer[i] = processHardClipNonAliased(upsampleBuffer[i]);
+                upsampleBufferL[i] = processHardClipNonAliased(upsampleBufferL[i]);
+                upsampleBufferR[i] = processHardClipNonAliased(upsampleBufferR[i]);
             }
-            outSample.left = downsample();
-            outSample.right = outSample.left;
+            outSample = downsampleStereo();
             break;
         case 3:
             outSample.left = processHardClip(sample.left);
@@ -115,37 +115,37 @@ krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
 void krakendsp::Distortion::fillUpSampleBuffer(float sample) {
     switch (oversample) {
         case Oversample::None:
-            upsampleBuffer[0] = sample;
+            upsampleBufferL[0] = sample;
             upsampleBufferLength = 1;
             break;
         case Oversample::x2:
             if (interpolationUpsample) {
                 applyInterpolationTo2xInBuffer(sample);
             } else {
-                fill2xOversampleBuffer(sample);
-                applyFilterToBuffer(true);
+                fill2xOversampleBufferMono(sample);
+                applyFilterToBufferMono(true);
             }
             break;
         case Oversample::x4:
             if (interpolationUpsample) {
                 applyInterpolationTo4xInBuffer(sample);
             } else {
-                fill2xOversampleBuffer(sample);
-                applyFilterToBuffer(true);
-                fill4xOversampleBuffer();
-                applyFilterToBuffer(true);
+                fill2xOversampleBufferMono(sample);
+                applyFilterToBufferMono(true);
+                fill4xOversampleBufferMono();
+                applyFilterToBufferMono(true);
             }
             break;
         case Oversample::x8:
             if (interpolationUpsample) {
                 applyInterpolationTo8xInBuffer(sample);
             } else {
-                fill2xOversampleBuffer(sample);
-                applyFilterToBuffer(true);
-                fill4xOversampleBuffer();
-                applyFilterToBuffer(true);
-                fill8xOversampleBuffer();
-                applyFilterToBuffer(true);
+                fill2xOversampleBufferMono(sample);
+                applyFilterToBufferMono(true);
+                fill4xOversampleBufferMono();
+                applyFilterToBufferMono(true);
+                fill8xOversampleBufferMono();
+                applyFilterToBufferMono(true);
             }
             break;
         default:
@@ -153,112 +153,309 @@ void krakendsp::Distortion::fillUpSampleBuffer(float sample) {
     }
 }
 
-float krakendsp::Distortion::downsample() {
+void krakendsp::Distortion::fillUpSampleBuffer(Stereo sample) {
     switch (oversample) {
         case Oversample::None:
-            return upsampleBuffer[0];
+            upsampleBufferL[0] = sample.left;
+            upsampleBufferR[0] = sample.right;
+            upsampleBufferLength = 1;
+            break;
         case Oversample::x2:
-            applyFilterToBuffer(false);
-            return upsampleBuffer[0];
+            if (interpolationUpsample) {
+                applyInterpolationTo2xInBuffer(sample);
+            } else {
+                fill2xOversampleBufferStereo(sample);
+                applyFilterToBufferStereo(true);
+            }
+            break;
         case Oversample::x4:
-            applyFilterToBuffer(false);
-            decimate2xOversampleBuffer();
-            applyFilterToBuffer(false);
-            return upsampleBuffer[0];
+            if (interpolationUpsample) {
+                applyInterpolationTo4xInBuffer(sample);
+            } else {
+                fill2xOversampleBufferStereo(sample);
+                applyFilterToBufferStereo(true);
+                fill4xOversampleBufferStereo();
+                applyFilterToBufferStereo(true);
+            }
+            break;
         case Oversample::x8:
-            applyFilterToBuffer(false);
-            decimate4xOversampleBuffer();
-            applyFilterToBuffer(false);
-            decimate2xOversampleBuffer();
-            applyFilterToBuffer(false);
-            return upsampleBuffer[0];
+            if (interpolationUpsample) {
+                applyInterpolationTo8xInBuffer(sample);
+            } else {
+                fill2xOversampleBufferStereo(sample);
+                applyFilterToBufferStereo(true);
+                fill4xOversampleBufferStereo();
+                applyFilterToBufferStereo(true);
+                fill8xOversampleBufferStereo();
+                applyFilterToBufferStereo(true);
+            }
+            break;
         default:
-            return upsampleBuffer[0];
+            break;
+    }
+}
+float krakendsp::Distortion::downsampleMono() {
+    switch (oversample) {
+        case Oversample::None:
+            return upsampleBufferL[0];
+        case Oversample::x2:
+            applyFilterToBufferMono(false);
+            return upsampleBufferL[0];
+        case Oversample::x4:
+            applyFilterToBufferMono(false);
+            decimate2xOversampleBufferMono();
+            applyFilterToBufferMono(false);
+            return upsampleBufferL[0];
+        case Oversample::x8:
+            applyFilterToBufferMono(false);
+            decimate4xOversampleBufferMono();
+            applyFilterToBufferMono(false);
+            decimate2xOversampleBufferMono();
+            applyFilterToBufferMono(false);
+            return upsampleBufferL[0];
+        default:
+            return upsampleBufferL[0];
     }
 }
 
-
+krakendsp::Stereo krakendsp::Distortion::downsampleStereo() {
+    Stereo output;
+    switch (oversample) {
+        case Oversample::None:
+            break;
+        case Oversample::x2:
+            applyFilterToBufferStereo(false);
+            break;
+        case Oversample::x4:
+            applyFilterToBufferStereo(false);
+            decimate2xOversampleBufferStereo();
+            applyFilterToBufferStereo(false);
+            break;
+        case Oversample::x8:
+            applyFilterToBufferStereo(false);
+            decimate4xOversampleBufferStereo();
+            applyFilterToBufferStereo(false);
+            decimate2xOversampleBufferStereo();
+            applyFilterToBufferStereo(false);
+            break;
+        default:
+            break;
+    }
+    output.left = upsampleBufferL[0];
+    output.right = upsampleBufferR[0];
+    return output;
+}
 
 void krakendsp::Distortion::applyInterpolationTo2xInBuffer(float sample) {
-    upsampleBuffer[0] = 0.5f * (previousSample + sample);
-    upsampleBuffer[1] = sample;
-    previousSample = sample;
+    upsampleBufferL[0] = 0.5f * (previousSampleL + sample);
+    upsampleBufferL[1] = sample;
+    previousSampleL = sample;
+    upsampleBufferLength = 2;
+}
+
+void krakendsp::Distortion::applyInterpolationTo2xInBuffer(Stereo sample) {
+    upsampleBufferL[0] = 0.5f * (previousSampleL + sample.left);
+    upsampleBufferL[1] = sample.left;
+    previousSampleL = sample.left;
+    upsampleBufferR[0] = 0.5f * (previousSampleL + sample.right);
+    upsampleBufferR[1] = sample.right;
+    previousSampleR = sample.right;
     upsampleBufferLength = 2;
 }
 
 void krakendsp::Distortion::applyInterpolationTo4xInBuffer(float sample) {
-    upsampleBuffer[0] = 0.75f * previousSample + 0.25f * sample;
-    upsampleBuffer[1] = 0.5f * (previousSample + sample);
-    upsampleBuffer[2] = 0.25f * previousSample + 0.75f * sample;
-    upsampleBuffer[3] = sample;
-    previousSample = sample;
+    upsampleBufferL[0] = 0.75f * previousSampleL + 0.25f * sample;
+    upsampleBufferL[1] = 0.5f * (previousSampleL + sample);
+    upsampleBufferL[2] = 0.25f * previousSampleL + 0.75f * sample;
+    upsampleBufferL[3] = sample;
+    previousSampleL = sample;
+    upsampleBufferLength = 4;
+}
+
+void krakendsp::Distortion::applyInterpolationTo4xInBuffer(Stereo sample) {
+    upsampleBufferL[0] = 0.75f * previousSampleL + 0.25f * sample.left;
+    upsampleBufferL[1] = 0.5f * (previousSampleL + sample.left);
+    upsampleBufferL[2] = 0.25f * previousSampleL + 0.75f * sample.left;
+    upsampleBufferL[3] = sample.left;
+    previousSampleL = sample.left;
+    upsampleBufferR[0] = 0.75f * previousSampleL + 0.25f * sample.right;
+    upsampleBufferR[1] = 0.5f * (previousSampleL + sample.right);
+    upsampleBufferR[2] = 0.25f * previousSampleL + 0.75f * sample.right;
+    upsampleBufferR[3] = sample.right;
+    previousSampleR = sample.right;
     upsampleBufferLength = 4;
 }
 
 void krakendsp::Distortion::applyInterpolationTo8xInBuffer(float sample) {
-    upsampleBuffer[0] = 0.875f * previousSample + 0.125f * sample;
-    upsampleBuffer[1] = 0.75f * previousSample + 0.25f * sample;
-    upsampleBuffer[2] = 0.625f * previousSample + 0.375f * sample;
-    upsampleBuffer[3] = 0.5f * (previousSample + sample);
-    upsampleBuffer[4] = 0.375f * previousSample + 0.625f * sample;
-    upsampleBuffer[5] = 0.25f * previousSample + 0.75f * sample;
-    upsampleBuffer[6] = 0.125f * previousSample + 0.875f * sample;
-    upsampleBuffer[7] = sample;
-    previousSample = sample;
+    upsampleBufferL[0] = 0.875f * previousSampleR + 0.125f * sample;
+    upsampleBufferL[1] = 0.75f * previousSampleR + 0.25f * sample;
+    upsampleBufferL[2] = 0.625f * previousSampleR + 0.375f * sample;
+    upsampleBufferL[3] = 0.5f * (previousSampleR + sample);
+    upsampleBufferL[4] = 0.375f * previousSampleR + 0.625f * sample;
+    upsampleBufferL[5] = 0.25f * previousSampleR + 0.75f * sample;
+    upsampleBufferL[6] = 0.125f * previousSampleR + 0.875f * sample;
+    upsampleBufferL[7] = sample;
+    previousSampleL = sample;
     upsampleBufferLength = 8;
 }
 
-void krakendsp::Distortion::applyFilterToBuffer(bool inBuffer) {
+void krakendsp::Distortion::applyInterpolationTo8xInBuffer(Stereo sample) {
+    upsampleBufferL[0] = 0.875f * previousSampleR + 0.125f * sample.left;
+    upsampleBufferL[1] = 0.75f * previousSampleR + 0.25f * sample.left;
+    upsampleBufferL[2] = 0.625f * previousSampleR + 0.375f * sample.left;
+    upsampleBufferL[3] = 0.5f * (previousSampleR + sample.left);
+    upsampleBufferL[4] = 0.375f * previousSampleR + 0.625f * sample.left;
+    upsampleBufferL[5] = 0.25f * previousSampleR + 0.75f * sample.left;
+    upsampleBufferL[6] = 0.125f * previousSampleR + 0.875f * sample.left;
+    upsampleBufferL[7] = sample.left;
+    previousSampleL = sample.left;
+    upsampleBufferR[0] = 0.875f * previousSampleR + 0.125f * sample.right;
+    upsampleBufferR[1] = 0.75f * previousSampleR + 0.25f * sample.right;
+    upsampleBufferR[2] = 0.625f * previousSampleR + 0.375f * sample.right;
+    upsampleBufferR[3] = 0.5f * (previousSampleR + sample.right);
+    upsampleBufferR[4] = 0.375f * previousSampleR + 0.625f * sample.right;
+    upsampleBufferR[5] = 0.25f * previousSampleR + 0.75f * sample.right;
+    upsampleBufferR[6] = 0.125f * previousSampleR + 0.875f * sample.right;
+    upsampleBufferR[7] = sample.right;
+    previousSampleR = sample.right;
+    upsampleBufferLength = 8;
+}
+
+void krakendsp::Distortion::applyFilterToBufferMono(bool inBuffer) {
     float* bufferPtr;
     size_t* bufferIndexPtr;
     if (upsampleBufferLength == 2) {
         if (inBuffer) {
-            bufferPtr = aa2xInBuffer.data();
-            bufferIndexPtr = &aa2xInBufferIndex;
+            bufferPtr = aa2xInBufferL.data();
+            bufferIndexPtr = &aa2xInBufferIndexL;
         } else {
-            bufferPtr = aa2xOutBuffer.data();
-            bufferIndexPtr = &aa2xOutBufferIndex;
+            bufferPtr = aa2xOutBufferL.data();
+            bufferIndexPtr = &aa2xOutBufferIndexL;
         }
     } else if (upsampleBufferLength == 4) {
         if (inBuffer) {
-            bufferPtr = aa4xInBuffer.data();
-            bufferIndexPtr = &aa4xInBufferIndex;
+            bufferPtr = aa4xInBufferL.data();
+            bufferIndexPtr = &aa4xInBufferIndexL;
         } else {
-            bufferPtr = aa4xOutBuffer.data();
-            bufferIndexPtr = &aa4xOutBufferIndex;
+            bufferPtr = aa4xOutBufferL.data();
+            bufferIndexPtr = &aa4xOutBufferIndexL;
         }
     } else if (upsampleBufferLength == 8) {
         if (inBuffer) {
-            bufferPtr = aa8xInBuffer.data();
-            bufferIndexPtr = &aa8xInBufferIndex;
+            bufferPtr = aa8xInBufferL.data();
+            bufferIndexPtr = &aa8xInBufferIndexL;
         } else {
-            bufferPtr = aa8xOutBuffer.data();
-            bufferIndexPtr = &aa8xOutBufferIndex;
+            bufferPtr = aa8xOutBufferL.data();
+            bufferIndexPtr = &aa8xOutBufferIndexL;
         }
     }
 
     for (size_t j = 0; j < upsampleBufferLength; j++) {
-        bufferPtr[*bufferIndexPtr] = upsampleBuffer[j];
-        upsampleBuffer[j] = 0.0f;
+        bufferPtr[*bufferIndexPtr] = upsampleBufferL[j];
+        upsampleBufferL[j] = 0.0f;
         if (inBuffer) {
             if (*bufferIndexPtr % 2 != 0) {
                 for (size_t i = 0; i < halfFilterSize; i += 2) {
                     size_t tempIndex = (*bufferIndexPtr + aaFilterCoeffs.size() - i) % 256;
                     size_t tempIndex2 = (*bufferIndexPtr + i + 1) % 256;
-                    upsampleBuffer[j] += (bufferPtr[tempIndex] + bufferPtr[tempIndex2]) * aaFilterCoeffs[i];
+                    upsampleBufferL[j] += (bufferPtr[tempIndex] + bufferPtr[tempIndex2]) * aaFilterCoeffs[i];
                 }
             } else {
-                upsampleBuffer[j] += bufferPtr[(*bufferIndexPtr - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+                upsampleBufferL[j] += bufferPtr[(*bufferIndexPtr - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
             }
         } else {
             for (size_t i = 0; i < halfFilterSize; i += 2) {
                 size_t tempIndex = (*bufferIndexPtr + aaFilterCoeffs.size() - i) % 256;
                 size_t tempIndex2 = (*bufferIndexPtr + i + 1) % 256;
-                upsampleBuffer[j] += (bufferPtr[tempIndex] + bufferPtr[tempIndex2]) * aaFilterCoeffs[i];
+                upsampleBufferL[j] += (bufferPtr[tempIndex] + bufferPtr[tempIndex2]) * aaFilterCoeffs[i];
             }
-            upsampleBuffer[j] += bufferPtr[(*bufferIndexPtr - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+            upsampleBufferL[j] += bufferPtr[(*bufferIndexPtr - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
         }
         *bufferIndexPtr = (*bufferIndexPtr + 1) % 256;
+    }
+}
+
+void krakendsp::Distortion::applyFilterToBufferStereo(bool inBuffer) {
+    float* bufferPtrL;
+    size_t* bufferIndexPtrL;
+    float* bufferPtrR;
+    size_t* bufferIndexPtrR;
+    if (upsampleBufferLength == 2) {
+        if (inBuffer) {
+            bufferPtrL = aa2xInBufferL.data();
+            bufferIndexPtrL = &aa2xInBufferIndexL;
+            bufferPtrR = aa2xInBufferR.data();
+            bufferIndexPtrR = &aa2xInBufferIndexR;
+        } else {
+            bufferPtrL = aa2xOutBufferL.data();
+            bufferIndexPtrL = &aa2xOutBufferIndexL;
+            bufferPtrR = aa2xOutBufferR.data();
+            bufferIndexPtrR = &aa2xOutBufferIndexR;
+        }
+    } else if (upsampleBufferLength == 4) {
+        if (inBuffer) {
+            bufferPtrL = aa4xInBufferL.data();
+            bufferIndexPtrL = &aa4xInBufferIndexL;
+            bufferPtrR = aa4xInBufferR.data();
+            bufferIndexPtrR = &aa4xInBufferIndexR;
+        } else {
+            bufferPtrL = aa4xOutBufferL.data();
+            bufferIndexPtrL = &aa4xOutBufferIndexL;
+            bufferPtrR = aa4xOutBufferR.data();
+            bufferIndexPtrR = &aa4xOutBufferIndexR;
+        }
+    } else if (upsampleBufferLength == 8) {
+        if (inBuffer) {
+            bufferPtrL = aa8xInBufferL.data();
+            bufferIndexPtrL = &aa8xInBufferIndexL;
+            bufferPtrR = aa8xInBufferR.data();
+            bufferIndexPtrR = &aa8xInBufferIndexR;
+        } else {
+            bufferPtrL = aa8xOutBufferL.data();
+            bufferIndexPtrL = &aa8xOutBufferIndexL;
+            bufferPtrR = aa8xOutBufferR.data();
+            bufferIndexPtrR = &aa8xOutBufferIndexR;
+        }
+    }
+
+    for (size_t j = 0; j < upsampleBufferLength; j++) {
+        bufferPtrL[*bufferIndexPtrL] = upsampleBufferL[j];
+        bufferPtrR[*bufferIndexPtrR] = upsampleBufferR[j];
+        upsampleBufferL[j] = 0.0f;
+        upsampleBufferR[j] = 0.0f;
+        if (inBuffer) {
+            if (*bufferIndexPtrL % 2 != 0) {
+                for (size_t i = 0; i < halfFilterSize; i += 2) {
+                    size_t tempIndex = (*bufferIndexPtrL + aaFilterCoeffs.size() - i) % 256;
+                    size_t tempIndex2 = (*bufferIndexPtrL + i + 1) % 256;
+                    upsampleBufferL[j] += (bufferPtrL[tempIndex] + bufferPtrL[tempIndex2]) * aaFilterCoeffs[i];
+                }
+            } else {
+                upsampleBufferL[j] += bufferPtrL[(*bufferIndexPtrL - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+            }
+            if (*bufferIndexPtrR % 2 != 0) {
+                for (size_t i = 0; i < halfFilterSize; i += 2) {
+                    size_t tempIndex = (*bufferIndexPtrR + aaFilterCoeffs.size() - i) % 256;
+                    size_t tempIndex2 = (*bufferIndexPtrR + i + 1) % 256;
+                    upsampleBufferR[j] += (bufferPtrR[tempIndex] + bufferPtrR[tempIndex2]) * aaFilterCoeffs[i];
+                }
+            } else {
+                upsampleBufferR[j] += bufferPtrR[(*bufferIndexPtrR - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+            }
+        } else {
+            for (size_t i = 0; i < halfFilterSize; i += 2) {
+                size_t tempIndexL = (*bufferIndexPtrL + aaFilterCoeffs.size() - i) % 256;
+                size_t tempIndex2L = (*bufferIndexPtrL + i + 1) % 256;
+                upsampleBufferL[j] += (bufferPtrL[tempIndexL] + bufferPtrL[tempIndex2L]) * aaFilterCoeffs[i];
+                size_t tempIndexR = (*bufferIndexPtrR + aaFilterCoeffs.size() - i) % 256;
+                size_t tempIndex2R = (*bufferIndexPtrR + i + 1) % 256;
+                upsampleBufferR[j] += (bufferPtrR[tempIndexR] + bufferPtrR[tempIndex2R]) * aaFilterCoeffs[i];
+            }
+            upsampleBufferL[j] += bufferPtrL[(*bufferIndexPtrL - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+            upsampleBufferR[j] += bufferPtrR[(*bufferIndexPtrR - halfFilterSize + aaFilterCoeffs.size()) % 256] * aaFilterCoeffs[halfFilterSize];
+        }
+        *bufferIndexPtrL = (*bufferIndexPtrL + 1) % 256;
+        *bufferIndexPtrR = (*bufferIndexPtrR + 1) % 256;
     }
 }
 
@@ -403,43 +600,103 @@ float krakendsp::Distortion::processWavefolder(float input) {
     return sample;
 }
 
-void krakendsp::Distortion::fill2xOversampleBuffer(float input) {
-    upsampleBuffer[0] = input;
-    upsampleBuffer[1] = 0.0f;
+void krakendsp::Distortion::fill2xOversampleBufferMono(float input) {
+    upsampleBufferL[0] = input;
+    upsampleBufferL[1] = 0.0f;
     upsampleBufferLength = 2;
 }
 
-void krakendsp::Distortion::fill4xOversampleBuffer() {
-    upsampleBuffer[0] = upsampleBuffer[0];
-    upsampleBuffer[2] = upsampleBuffer[1];
-    upsampleBuffer[1] = 0.0f;
-    upsampleBuffer[3] = 0.0f;
+void krakendsp::Distortion::fill2xOversampleBufferStereo(Stereo input) {
+    upsampleBufferL[0] = input.left;
+    upsampleBufferL[1] = 0.0f;
+    upsampleBufferR[0] = input.right;
+    upsampleBufferR[1] = 0.0f;
+    upsampleBufferLength = 2;
+}
+
+void krakendsp::Distortion::fill4xOversampleBufferMono() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[2] = upsampleBufferL[1];
+    upsampleBufferL[1] = 0.0f;
+    upsampleBufferL[3] = 0.0f;
     upsampleBufferLength = 4;
 }
 
-void krakendsp::Distortion::fill8xOversampleBuffer() {
-    upsampleBuffer[0] = upsampleBuffer[0];
-    upsampleBuffer[2] = upsampleBuffer[1];
-    upsampleBuffer[4] = upsampleBuffer[2];
-    upsampleBuffer[6] = upsampleBuffer[3];
-    upsampleBuffer[1] = 0.0f;
-    upsampleBuffer[3] = 0.0f;
-    upsampleBuffer[5] = 0.0f;
-    upsampleBuffer[7] = 0.0f;
+void krakendsp::Distortion::fill4xOversampleBufferStereo() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[2] = upsampleBufferL[1];
+    upsampleBufferL[1] = 0.0f;
+    upsampleBufferL[3] = 0.0f;
+    upsampleBufferR[0] = upsampleBufferR[0];
+    upsampleBufferR[2] = upsampleBufferR[1];
+    upsampleBufferR[1] = 0.0f;
+    upsampleBufferR[3] = 0.0f;
+    upsampleBufferLength = 4;
+}
+
+void krakendsp::Distortion::fill8xOversampleBufferMono() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[2] = upsampleBufferL[1];
+    upsampleBufferL[4] = upsampleBufferL[2];
+    upsampleBufferL[6] = upsampleBufferL[3];
+    upsampleBufferL[1] = 0.0f;
+    upsampleBufferL[3] = 0.0f;
+    upsampleBufferL[5] = 0.0f;
+    upsampleBufferL[7] = 0.0f;
     upsampleBufferLength = 8;
 }
 
-void krakendsp::Distortion::decimate2xOversampleBuffer() {
-    upsampleBuffer[0] = upsampleBuffer[0];
-    upsampleBuffer[1] = upsampleBuffer[2];
+void krakendsp::Distortion::fill8xOversampleBufferStereo() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[2] = upsampleBufferL[1];
+    upsampleBufferL[4] = upsampleBufferL[2];
+    upsampleBufferL[6] = upsampleBufferL[3];
+    upsampleBufferL[1] = 0.0f;
+    upsampleBufferL[3] = 0.0f;
+    upsampleBufferL[5] = 0.0f;
+    upsampleBufferL[7] = 0.0f;
+    upsampleBufferR[0] = upsampleBufferR[0];
+    upsampleBufferR[2] = upsampleBufferR[1];
+    upsampleBufferR[4] = upsampleBufferR[2];
+    upsampleBufferR[6] = upsampleBufferR[3];
+    upsampleBufferR[1] = 0.0f;
+    upsampleBufferR[3] = 0.0f;
+    upsampleBufferR[5] = 0.0f;
+    upsampleBufferR[7] = 0.0f;
+    upsampleBufferLength = 8;
+}
+
+void krakendsp::Distortion::decimate2xOversampleBufferMono() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[1] = upsampleBufferL[2];
     upsampleBufferLength = 2;
 }
 
-void krakendsp::Distortion::decimate4xOversampleBuffer() {
-    upsampleBuffer[0] = upsampleBuffer[0];
-    upsampleBuffer[1] = upsampleBuffer[2];
-    upsampleBuffer[2] = upsampleBuffer[4];
-    upsampleBuffer[3] = upsampleBuffer[6];
+void krakendsp::Distortion::decimate2xOversampleBufferStereo() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[1] = upsampleBufferL[2];
+    upsampleBufferR[0] = upsampleBufferR[0];
+    upsampleBufferR[1] = upsampleBufferR[2];
+    upsampleBufferLength = 2;
+}
+
+void krakendsp::Distortion::decimate4xOversampleBufferMono() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[1] = upsampleBufferL[2];
+    upsampleBufferL[2] = upsampleBufferL[4];
+    upsampleBufferL[3] = upsampleBufferL[6];
+    upsampleBufferLength = 4;
+}
+
+void krakendsp::Distortion::decimate4xOversampleBufferStereo() {
+    upsampleBufferL[0] = upsampleBufferL[0];
+    upsampleBufferL[1] = upsampleBufferL[2];
+    upsampleBufferL[2] = upsampleBufferL[4];
+    upsampleBufferL[3] = upsampleBufferL[6];
+    upsampleBufferR[0] = upsampleBufferR[0];
+    upsampleBufferR[1] = upsampleBufferR[2];
+    upsampleBufferR[2] = upsampleBufferR[4];
+    upsampleBufferR[3] = upsampleBufferR[6];
     upsampleBufferLength = 4;
 }
 
