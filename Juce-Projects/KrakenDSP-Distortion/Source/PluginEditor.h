@@ -37,6 +37,22 @@ private:
     juce::Label  oversampleInterpolationLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> oversampleInterpolationSliderAttachment;
 
+    juce::Slider filter1FreqSlider;
+    juce::Label  filter1FreqLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filter1FreqSliderAttachment;
+
+    juce::Slider filter1TypeSlider;
+    juce::Label  filter1TypeLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filter1TypeSliderAttachment;
+
+    juce::Slider filter1GainSlider;
+    juce::Label  filter1GainLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filter1GainSliderAttachment;
+
+    juce::Slider filter1QSlider;
+    juce::Label  filter1QLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> filter1QSliderAttachment;
+
     KrakenDSPDistortionAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KrakenDSPDistortionAudioProcessorEditor)

@@ -6,7 +6,11 @@ KrakenDSPDistortionAudioProcessor::KrakenDSPDistortionAudioProcessor(): apvts(*t
     std::make_unique<juce::AudioParameterFloat>("TYPESELECT", "Type select", 0.0f, 1.0f, 0.2f),
     std::make_unique<juce::AudioParameterFloat>("CONTROL0", "Control 0", 0.0f, 1.0f, 0.000001f),
     std::make_unique<juce::AudioParameterFloat>("OVERSAMPLE", "Oversample", 0.0f, 1.0f, 0.1f),
-    std::make_unique<juce::AudioParameterFloat>("OSINTERPOLATION", "Oversample interpolation mode", 0.0f, 1.0f, 0.1f)
+    std::make_unique<juce::AudioParameterFloat>("OSINTERPOLATION", "Oversample interpolation mode", 0.0f, 1.0f, 0.1f),
+    std::make_unique<juce::AudioParameterFloat>("FILTER1FREQ", "Filter 1 freq", 0.0f, 1.0f, 0.0001f),
+    std::make_unique<juce::AudioParameterFloat>("FILTER1TYPE", "Filter 1 type", 0.0f, 1.0f, 0.0001f),
+    std::make_unique<juce::AudioParameterFloat>("FILTER1GAIN", "Filter 1 gain", 0.0f, 1.0f, 0.0001f),
+    std::make_unique<juce::AudioParameterFloat>("FILTER1Q", "Filter 1 q", 0.0f, 1.0f, 0.0001f)
 })
 {
     juce::Timer::startTimerHz(30); // Timer for GUI updates

@@ -5,10 +5,12 @@ krakendsp::Distortion::Distortion(float gain_, int type, size_t oversample_, flo
     currentType(type),
     samplerate(samplerate_) {
         setOversample(oversample_);
+        filter1.setSamplerate(samplerate);
     }
 
 void krakendsp::Distortion::setSampleRate(float samplerate_) {
     samplerate = samplerate_;
+    filter1.setSamplerate(samplerate);
 }
 
 void krakendsp::Distortion::setGain(float gain_) {
@@ -52,7 +54,7 @@ float krakendsp::Distortion::process(float sample) {
             outSample = processRaw(sample);
             break;
         case 1:
-            outSample = processHardClipNonAliased(sample);
+            outSample = processHardClip(sample);
             break;
         case 2:
             outSample = processHardClip(sample);
@@ -75,40 +77,41 @@ float krakendsp::Distortion::process(float sample) {
 
 krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
     Stereo outSample;
-    switch (currentType) {
-        case 0:
-            outSample.left = processRaw(sample.left);
-            outSample.right = outSample.left;
-            break;
-        case 1:
-            outSample.left = processSoftClip(sample.left);
-            outSample.right = outSample.left;
-            break;
-        case 2:
-            fillUpSampleBuffer(sample);
-            for (size_t i = 0; i < upsampleBufferLength; i++) {
-                upsampleBufferL[i] = processHardClipNonAliased(upsampleBufferL[i]);
-                upsampleBufferR[i] = processHardClipNonAliased(upsampleBufferR[i]);
-            }
-            outSample = downsampleStereo();
-            break;
-        case 3:
-            outSample.left = processHardClip(sample.left);
-            outSample.right = outSample.left;
-            break;
-        case 4:
-            outSample.left = processWavefolder(sample.left);
-            outSample.right = outSample.left;
-            break;
-        case 5:
-            outSample.left = processClean(sample.left);
-            outSample.right = outSample.left;
-            break;
-        default:
-            outSample.left = processRaw(sample.left);
-            outSample.right = outSample.left;
-            break;
+    fillUpSampleBuffer(sample);
+    for (size_t i = 0; i < upsampleBufferLength; i++) {
+        switch (currentType) {
+            case 0:
+                upsampleBufferL[i] = processRaw(upsampleBufferL[i]);
+                upsampleBufferR[i] = processRaw(upsampleBufferR[i]);
+                break;
+            case 1:
+                upsampleBufferL[i] = processSoftClip(upsampleBufferL[i]);
+                upsampleBufferR[i] = processSoftClip(upsampleBufferR[i]);
+                break;
+            case 2:
+                upsampleBufferL[i] = processHardClip(upsampleBufferL[i]);
+                upsampleBufferR[i] = processHardClip(upsampleBufferR[i]);
+                break;
+            case 3:
+                upsampleBufferL[i] = processHardClip(upsampleBufferL[i]);
+                upsampleBufferR[i] = processHardClip(upsampleBufferR[i]);
+                break;
+            case 4:
+                upsampleBufferL[i] = processWavefolder(upsampleBufferL[i]);
+                upsampleBufferR[i] = processWavefolder(upsampleBufferR[i]);
+                break;
+            case 5:
+                upsampleBufferL[i] = processClean(upsampleBufferL[i]);
+                upsampleBufferR[i] = processClean(upsampleBufferR[i]);
+                break;
+            default:
+                upsampleBufferL[i] = processRaw(upsampleBufferL[i]);
+                upsampleBufferR[i] = processRaw(upsampleBufferR[i]);
+                break;
         }
+    }
+    outSample = downsampleStereo();
+    outSample = filter1.process(outSample);
     return outSample;
 }
 
@@ -552,23 +555,6 @@ float krakendsp::Distortion::processHardClip(float input) {
     return sample;
 }
 
-float krakendsp::Distortion::processHardClipNonAliased(float input) {
-    float realGain = gain * gain * gain * 1000.0f;
-    float sample = input * realGain;
-    
-    sample = sample * realGain;
-    if (sample > 1) {
-        sample = 1;
-    } else if (sample < -1) {
-        sample = -1;
-    }
-    //if (sample < -3.f) { sample = -1.f; }
-    //else if (sample > 3.f) { sample = 1.f; }
-    //else { sample = sample * (27.f + sample*sample) / (27.f + sample * sample * 9.f); }
-
-    return sample;
-}
-
 float krakendsp::Distortion::processWavefolder(float input) {
     float polarity = 1;
     if (input < 0) {
@@ -710,4 +696,37 @@ bool krakendsp::Distortion::getInterpolationUpsampleMode() {
 
 std::vector<krakendsp::Log> krakendsp::Distortion::getLog() const {
     return log;
+}
+
+void krakendsp::Distortion::setFilter1Freq(float freq) {
+    filter1.setFrequency(freq);
+}
+
+void krakendsp::Distortion::setFilter1Type(size_t type) {
+    filter1.setType(type);
+}
+
+float krakendsp::Distortion::getFilter1Freq() {
+    return filter1.getControlValueRaw(0);
+}
+
+std::string krakendsp::Distortion::getFilter1Type() {
+    auto type = filter1.getType();
+    return type.name;
+}
+
+void krakendsp::Distortion::setFilter1Gain(float gain) {
+    filter1.setGain(gain);
+}
+
+float krakendsp::Distortion::getFilter1Gain() {
+    return filter1.getControlValueRaw(1);
+}
+
+void krakendsp::Distortion::setFilter1Q(float q) {
+    filter1.setQ(q);
+}
+
+float krakendsp::Distortion::getFilter1Q() {
+    return filter1.getControlValueRaw(2);
 }

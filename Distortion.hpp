@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include "BiquadFilter.hpp"
 
 namespace krakendsp
 {
@@ -49,6 +50,17 @@ namespace krakendsp
             bool getInterpolationUpsampleMode();
 
             std::vector<Log> getLog() const override;
+
+            void setFilter1Freq(float freq);
+            void setFilter1Type(size_t type);
+            float getFilter1Freq();
+            std::string getFilter1Type();
+
+            void setFilter1Gain(float gain);
+            float getFilter1Gain();
+
+            void setFilter1Q(float q);
+            float getFilter1Q();
             
         private:
             float gain = 0;
@@ -60,8 +72,11 @@ namespace krakendsp
 
             std::string name = "Distortion";
             std::vector<krakendsp::FXControl> controls = {
-                krakendsp::FXControl{"Gain", 1.0f, "", 0.0f, 1.0f, 0}
+                krakendsp::FXControl{"Gain", 1.0f, "", 0.0f, 1.0f, 0},
+                krakendsp::FXControl{"Filter1 Freq", 10000.0f, "Hz", 10.0f, 20000.0f, 1},
+                krakendsp::FXControl{"Filter1 Type", 0.0f, "", 0.0f, 5.0f, 2}
             };
+
             std::vector<krakendsp::FXSubType> types = {
                 krakendsp::FXSubType{"Raw", 0},
                 krakendsp::FXSubType{"Softclip", 1},
@@ -76,8 +91,6 @@ namespace krakendsp
             float processSoftClip(float input);
             float processHardClip(float input);
             float processWavefolder(float input);
-
-            float processHardClipNonAliased(float input);
 
             float samplerateWithOversample() const {
                 return samplerate * static_cast<float>(oversample);
@@ -195,6 +208,8 @@ namespace krakendsp
             void fillUpSampleBuffer(Stereo sample);
             float downsampleMono();
             Stereo downsampleStereo();
+
+            BiquadFilter filter1;
     };
 }
 
