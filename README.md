@@ -6,16 +6,27 @@ Audio multi-effects library
 Main idea is to have a set of audio-effects that implement the MultiFX virtual class, so they can easily be used in different projects.
 At first there will be separate Juce-projects to create VST-plugins from them, but another main goal is to create a physical multi-effects units for modular synthesizers using Electrosmith Daisy ( https://electro-smith.com/products/daisy-seed ).
 
-Currently it has only simple distortion effect.
+Currently it has only simple distortion, tremolo and filter/EQ effects.
 
 TO DO:
 Distortion:
 - implement Overdrive type
-- implement Metal Zone type (requires filter effects)
-- implement oversampling
+- implement Metal Zone type
+- implement EQ/Tonestack
+
+Tremolo:
+- create JUCE-project
+  
+Biquad Filter:
+- Fix normalization/denormalization confusion of controls
+- create JUCE-project
+
+LFO:
+- Check if vertical & hortical distortions actually work as intended
+- Define what is actually intended
+- Add more
 
 Effects to add:
-- Tremolo (requires LFO)
 - Bitcrusher
 - Chorus (requires LFO and Delay)
 - Compressor (requires Envelope follower and ADSR envelope)
@@ -26,7 +37,6 @@ Effects to add:
 - Convolution reverb and/or convolution based guitar cabinet modeler
 
 Utilities to add:
-- LFO
 - ADSR envelope
 - Envelope follower
 - Ringbuffer
