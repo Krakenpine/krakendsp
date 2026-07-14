@@ -15,7 +15,7 @@ Distortion:
 - implement EQ/Tonestack
 
 Tremolo:
-- create JUCE-project
+- update JUCE-project
   
 Biquad Filter:
 - Fix normalization/denormalization confusion of controls
