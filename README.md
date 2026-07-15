@@ -15,12 +15,22 @@ Distortion:
 - implement EQ/Tonestack
 
 Tremolo:
-- update JUCE-project
+- More settings
+- Update JUCE-project
+- Make JUCE-project save settings
   
 Delay:
+- Add stereo function
 - Create other delay types
   - Low pass filter for delayed signal
   - Modulated delay
+  - Multi-tap delay
+- Make JUCE-project save settings
+
+Chorus:
+- Very basic
+- Add filter and more settings
+- Make JUCE-project save settings
   
 Biquad Filter:
 - Fix normalization/denormalization confusion of controls
@@ -29,11 +39,14 @@ Biquad Filter:
 LFO:
 - Check if vertical & hortical distortions actually work as intended
 - Define what is actually intended
+- Add interpolation on sine lookup-table
 - Add more
+
+RingBuffer:
+- Add multiple read heads
 
 Effects to add:
 - Bitcrusher
-- Chorus (requires LFO and Delay)
 - Compressor (requires Envelope follower and ADSR envelope)
 - Gate/Expander (requires Envelope follower and ADSR envelope)
 - Filters
@@ -43,7 +56,6 @@ Effects to add:
 Utilities to add:
 - ADSR envelope
 - Envelope follower
-- Ringbuffer
 
 Other:
 - Preprocessor configuration to build version for pure 64-bit processors to use double precision floating point numbers or for slower embedded processor to use single precision floating point numbers

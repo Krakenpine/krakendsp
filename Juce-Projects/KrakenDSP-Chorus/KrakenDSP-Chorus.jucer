@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="PHLx3s" name="KrakenDSP-Chorus" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" version="0.0.1"
+              companyName="Krakenpine" companyWebsite="  " companyEmail="krakenpine@kapsi.fi"
+              pluginFormats="buildVST3" pluginCode="Chor">
+  <MAINGROUP id="tGT7Cp" name="KrakenDSP-Chorus">
+    <GROUP id="{D66CE6C4-A266-B632-4C01-943F67741979}" name="Source">
+      <FILE id="orSFPf" name="MultiFX.hpp" compile="0" resource="0" file="../../MultiFX.hpp"/>
+      <FILE id="fRs6aX" name="Chorus.cpp" compile="1" resource="0" file="../../Chorus.cpp"/>
+      <FILE id="yxEIpQ" name="Chorus.hpp" compile="0" resource="0" file="../../Chorus.hpp"/>
+      <FILE id="vWWP3S" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="nzduMq" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="lccnC0" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="LtKf7W" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <FILE id="fhFIAY" name="BiquadFilter.cpp" compile="1" resource="0"
+          file="../../BiquadFilter.cpp"/>
+    <FILE id="tUJDBZ" name="BiquadFilter.hpp" compile="0" resource="0"
+          file="../../BiquadFilter.hpp"/>
+    <FILE id="AVOyL6" name="Delay.cpp" compile="1" resource="0" file="../../Delay.cpp"/>
+    <FILE id="iAXUnG" name="Delay.hpp" compile="0" resource="0" file="../../Delay.hpp"/>
+    <FILE id="X2nPks" name="LFO.cpp" compile="1" resource="0" file="../../LFO.cpp"/>
+    <FILE id="Rub9Iw" name="LFO.hpp" compile="0" resource="0" file="../../LFO.hpp"/>
+    <FILE id="L33Ywu" name="RingBuffer.cpp" compile="1" resource="0" file="../../RingBuffer.cpp"/>
+    <FILE id="Ijh8TE" name="RingBuffer.hpp" compile="0" resource="0" file="../../RingBuffer.hpp"/>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors_headless" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="KrakenDSP-Chorus"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="KrakenDSP-Chorus"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+</JUCERPROJECT>

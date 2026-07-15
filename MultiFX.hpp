@@ -31,6 +31,20 @@ struct Log {
     float value;
 };
 
+inline float scaleValue(float min, float max, float normalizedValue) {
+    float scaledValue = (max - min) * normalizedValue + min;
+    return scaledValue;
+}
+
+inline float samplesToMS(float samples, float samplerate) {
+    return samples * 1000.0f / samplerate;
+}
+
+inline float MSToSamples(float ms, float samplerate) {
+    return ms * samplerate / 1000.0f;
+}
+
+
 class MultiFX {
     public:
         virtual ~MultiFX() = default;
