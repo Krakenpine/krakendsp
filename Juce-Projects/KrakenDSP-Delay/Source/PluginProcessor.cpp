@@ -1,20 +1,18 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-KrakenDSPTremoloAudioProcessor::KrakenDSPTremoloAudioProcessor(): apvts(*this, nullptr, juce::Identifier ("KrakenDSP Tremolo"),
+KrakenDSPDelayAudioProcessor::KrakenDSPDelayAudioProcessor(): apvts(*this, nullptr, juce::Identifier ("KrakenDSP Delay"),
 {
-    std::make_unique<juce::AudioParameterFloat>("TYPESELECT", "Type select", 0.0f, 1.0f, 0.01f),
-    std::make_unique<juce::AudioParameterFloat>("CONTROL0", "Control 0", 0.0f, 1.0f, 0.000001f),
-    std::make_unique<juce::AudioParameterFloat>("CONTROL1", "Control 1", 0.0f, 1.0f, 0.000001f),
-    std::make_unique<juce::AudioParameterFloat>("CONTROL2", "Control 2", 0.0f, 1.0f, 0.000001f),
-    std::make_unique<juce::AudioParameterFloat>("CONTROL3", "Control 3", 0.0f, 1.0f, 0.000001f),
-    std::make_unique<juce::AudioParameterFloat>("CONTROL4", "Control 4", 0.0f, 1.0f, 0.000001f),
+    std::make_unique<juce::AudioParameterFloat>("LENGTH", "Length", 0.0f, 1.0f, 0.0001f),
+    std::make_unique<juce::AudioParameterFloat>("MIX", "Mix", 0.0f, 1.0f, 0.0001f),
+    std::make_unique<juce::AudioParameterFloat>("FEEDBACK", "Feedback", 0.0f, 1.0f, 0.0001f),
+
 })
 {
     juce::Timer::startTimerHz(30); // Timer for GUI updates
 }
 
-void KrakenDSPTremoloAudioProcessor::timerCallback()
+void KrakenDSPDelayAudioProcessor::timerCallback()
 {
     if (auto* editor = getActiveEditor())
     {
@@ -26,75 +24,75 @@ void KrakenDSPTremoloAudioProcessor::timerCallback()
 }
 
 
-KrakenDSPTremoloAudioProcessor::~KrakenDSPTremoloAudioProcessor()
+KrakenDSPDelayAudioProcessor::~KrakenDSPDelayAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String KrakenDSPTremoloAudioProcessor::getName() const
+const juce::String KrakenDSPDelayAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool KrakenDSPTremoloAudioProcessor::acceptsMidi() const
+bool KrakenDSPDelayAudioProcessor::acceptsMidi() const
 {
     return false;
 }
 
-bool KrakenDSPTremoloAudioProcessor::producesMidi() const
+bool KrakenDSPDelayAudioProcessor::producesMidi() const
 {
     return false;
 }
 
-bool KrakenDSPTremoloAudioProcessor::isMidiEffect() const
+bool KrakenDSPDelayAudioProcessor::isMidiEffect() const
 {
     return false;
 }
 
-double KrakenDSPTremoloAudioProcessor::getTailLengthSeconds() const
+double KrakenDSPDelayAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int KrakenDSPTremoloAudioProcessor::getNumPrograms()
+int KrakenDSPDelayAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int KrakenDSPTremoloAudioProcessor::getCurrentProgram()
+int KrakenDSPDelayAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void KrakenDSPTremoloAudioProcessor::setCurrentProgram (int index)
+void KrakenDSPDelayAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String KrakenDSPTremoloAudioProcessor::getProgramName (int index)
+const juce::String KrakenDSPDelayAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void KrakenDSPTremoloAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void KrakenDSPDelayAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void KrakenDSPTremoloAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void KrakenDSPDelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
-void KrakenDSPTremoloAudioProcessor::releaseResources()
+void KrakenDSPDelayAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool KrakenDSPTremoloAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool KrakenDSPDelayAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -119,8 +117,19 @@ bool KrakenDSPTremoloAudioProcessor::isBusesLayoutSupported (const BusesLayout& 
 }
 #endif
 
-void KrakenDSPTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void KrakenDSPDelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+
+    if (hasLoadedState && !hasLoaded) {
+        hasLoaded = true;
+
+        if (auto* editor = getActiveEditor())
+        {
+            editor->repaint(); // Request a repaint of the editor
+        }
+
+    }
+
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
@@ -142,42 +151,38 @@ void KrakenDSPTremoloAudioProcessor::processBlock (juce::AudioBuffer<float>& buf
         input.right = inBufferRight[sample];
         
         krakendsp::Stereo output;
-        output = tremolo.process(input);
+        output.left = delay.process(input.left);
         
         outBufferLeft[sample] = output.left;
-        outBufferRight[sample] = output.right;
+        outBufferRight[sample] = output.left;
     }
 
 }
 
 //==============================================================================
-bool KrakenDSPTremoloAudioProcessor::hasEditor() const
+bool KrakenDSPDelayAudioProcessor::hasEditor() const
 {
     return true;
 }
 
-juce::AudioProcessorEditor* KrakenDSPTremoloAudioProcessor::createEditor()
+juce::AudioProcessorEditor* KrakenDSPDelayAudioProcessor::createEditor()
 {
-    return new KrakenDSPTremoloAudioProcessorEditor (*this);
+    return new KrakenDSPDelayAudioProcessorEditor (*this);
 }
 
-//==============================================================================
-void KrakenDSPTremoloAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void KrakenDSPDelayAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+
 }
 
-void KrakenDSPTremoloAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void KrakenDSPDelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    hasLoadedState = true;
 }
 
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new KrakenDSPTremoloAudioProcessor();
+    return new KrakenDSPDelayAudioProcessor();
 }

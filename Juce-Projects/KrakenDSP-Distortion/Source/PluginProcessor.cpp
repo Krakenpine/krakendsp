@@ -18,7 +18,6 @@ KrakenDSPDistortionAudioProcessor::KrakenDSPDistortionAudioProcessor(): apvts(*t
 
 void KrakenDSPDistortionAudioProcessor::timerCallback()
 {
-    cunter++;
     if (auto* editor = getActiveEditor())
     {
         if (!hasUpdatedGui){

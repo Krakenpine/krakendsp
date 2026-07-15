@@ -2,14 +2,14 @@
 
 #include <JuceHeader.h>
 #include "../../../MultiFX.hpp"
-#include "../../../Distortion.hpp"
+#include "../../../Delay.hpp"
 
 
-class KrakenDSPDistortionAudioProcessor  : public juce::AudioProcessor, juce::Timer
+class KrakenDSPDelayAudioProcessor  : public juce::AudioProcessor, juce::Timer
 {
 public:
-    KrakenDSPDistortionAudioProcessor();
-    ~KrakenDSPDistortionAudioProcessor() override;
+    KrakenDSPDelayAudioProcessor();
+    ~KrakenDSPDelayAudioProcessor() override;
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -45,7 +45,7 @@ public:
     
     juce::AudioProcessorValueTreeState apvts;
     
-    krakendsp::Distortion distortion;
+    krakendsp::Delay delay = krakendsp::Delay(0.3f, 0.5f, 0.5f, 44100.0f, 88000, false, true, nullptr, nullptr);
 
     bool hasUpdatedGui = false;
     bool hasLoaded = false;
@@ -53,32 +53,32 @@ public:
     
     juce::String getFxName() const
     {
-        return juce::String(distortion.getName());
+        return juce::String(delay.getName());
     }
     
     juce::String getFxType() const
     {
-        return juce::String(distortion.getType().name);
+        return juce::String(delay.getType().name);
     }
     
     std::vector<krakendsp::FXControl> getFxControls() const
     {
-        return distortion.getControls();
+        return delay.getControls();
     }
     
     float getControlValue(int index) const
     {
-        return distortion.getControlValue(index);
+        return delay.getControlValue(index);
     }
     
     size_t getTypeCount() const
     {
-        return distortion.getTypes().size();
+        return delay.getTypes().size();
     }
     
     
     void timerCallback() override;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KrakenDSPDistortionAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (KrakenDSPDelayAudioProcessor)
 };

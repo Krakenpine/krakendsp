@@ -48,8 +48,6 @@ public:
     
     
     krakendsp::Tremolo tremolo = krakendsp::Tremolo(1.0f, 1.0f, 44100.0f);
-    
-    int cunter = 0;
 
     bool hasUpdatedGui = false;
     
