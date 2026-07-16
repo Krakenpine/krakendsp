@@ -13,6 +13,7 @@ Distortion:
 - implement Overdrive type
 - implement Metal Zone type
 - implement EQ/Tonestack
+- Save and load all settings in vst
 
 Tremolo:
 - More settings
@@ -35,6 +36,10 @@ Chorus:
 Biquad Filter:
 - Fix normalization/denormalization confusion of controls
 - create JUCE-project
+  
+Cabinet Modeler:
+- Currently more of a proof-of-concept
+- Extremely simplified IR-convolution, should be remade with FFT
 
 LFO:
 - Check if vertical & hortical distortions actually work as intended
@@ -51,7 +56,7 @@ Effects to add:
 - Gate/Expander (requires Envelope follower and ADSR envelope)
 - Filters
 - Reverb
-- Convolution reverb and/or convolution based guitar cabinet modeler
+- Convolution reverb
 
 Utilities to add:
 - ADSR envelope
