@@ -10,6 +10,8 @@ krakendsp::BiquadFilter::BiquadFilter(float samplerate_) :
     }
 
 void krakendsp::BiquadFilter::setSamplerate(float samplerate_) {
+    float test = 0.1f;
+
     samplerate = samplerate_;
     Fs = 1.0f / samplerate;
     calculateCoeffs();
@@ -237,4 +239,17 @@ std::vector<krakendsp::FXSubType> krakendsp::BiquadFilter::getTypes() const {
 
 std::vector<krakendsp::Log> krakendsp::BiquadFilter::getLog() const {
     return log;
+}
+
+krakendsp::FileType krakendsp::BiquadFilter::getFileType() const {
+    return krakendsp::FileType::None;
+}
+
+std::vector<krakendsp::AcceptedFile> krakendsp::BiquadFilter::getAcceptedFiles() const {
+    std::vector<krakendsp::AcceptedFile> acceptedFiles;
+    return acceptedFiles;
+}
+
+void krakendsp::BiquadFilter::setFile(const krakendsp::FXFile& file, size_t fileIndex) {
+    // Implementation for setting the file goes here
 }

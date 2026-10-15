@@ -12,7 +12,7 @@ namespace krakendsp
     class Delay : public krakendsp::MultiFX
     {
         public:
-            Delay() = default;
+            Delay();
             Delay(float feedback_, float mix_, float length_, float samplerate_, size_t bufferSize_, bool isMono_, bool dynamicBuffer_, float* buffer1_, float* buffer2_);
             ~Delay() override = default;
 
@@ -46,12 +46,17 @@ namespace krakendsp
             void setMix(float mix_);
             void setSamplerate(float samplerate_);
 
+            FileType getFileType() const override;
+            std::vector<AcceptedFile> getAcceptedFiles() const override;
+
+            void setFile(const FXFile& file, size_t fileIndex) override;
+
             std::vector<Log> getLog() const override;
 
         private:
-            float feedback = 0;
-            float mix = 0;
-            float samplerate = 44100.0f;
+            float feedback;
+            float mix;
+            float samplerate;
 
             bool dynamicBuffer;
 
@@ -72,13 +77,34 @@ namespace krakendsp
 
             std::string name = "Delay";
             std::vector<krakendsp::FXControl> controls = {
-                krakendsp::FXControl{"Feedback", 1.0f, "", 0.0f, 1.0f, 0},
-                krakendsp::FXControl{"Mix", 1.0f, "", 0.0f, 1.0f, 1},
-                krakendsp::FXControl{"Length", samplerate, "ms", 0.0f, 1.0f, 2}
+                krakendsp::FXControl{
+                    .name = "Feedback",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 0},
+                krakendsp::FXControl{
+                    .name = "Mix",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 1},
+                krakendsp::FXControl{
+                    .name = "Length",
+                    .displayMultiplier = samplerate,
+                    .unit = "ms",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 2}
             };
 
             std::vector<FXSubType> types = {
-                krakendsp::FXSubType{"Standard", 0}
+                krakendsp::FXSubType{
+                    .name = "Standard",
+                    .typeID = 0
+                }
             };
 
             float samplesToMS(float samples) const;

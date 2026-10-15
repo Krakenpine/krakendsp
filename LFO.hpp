@@ -52,7 +52,6 @@ class LFO
         float prevSample = 0.0f;
         float filterFreq = 0.0f;
         float filterFreqInv = 1.0f;
-
 };
 
 }

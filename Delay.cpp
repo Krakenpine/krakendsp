@@ -2,10 +2,33 @@
 #include "RingBuffer.hpp"
 #include <algorithm>
 
-krakendsp::Delay::Delay(float feedback_, float mix_, float length_, float samplerate_, size_t bufferSize_, bool isMono_, bool dynamicBuffer_, float* buffer1_, float* buffer2_) :
+krakendsp::Delay::Delay() :
+    feedback(0),
+    mix(0),
+    samplerate(48000.0f),
+    dynamicBuffer(false),
+    bufferSize(0),
+    buffer1(nullptr),
+    buffer2(nullptr),
+    delayLength(0),
+    delayLengthNormalized(0),
+    isMono(true)
+{}
+
+krakendsp::Delay::Delay(
+    float feedback_,
+    float mix_,
+    float length_,
+    float samplerate_,
+    size_t bufferSize_,
+    bool isMono_,
+    bool dynamicBuffer_,
+    float* buffer1_,
+    float* buffer2_) :
     feedback(feedback_),
     mix(mix_),
     delayLengthNormalized(length_),
+    delayLength(length_ * static_cast<float>(bufferSize)),
     samplerate(samplerate_),
     bufferSize(bufferSize_),
     isMono(isMono_),
@@ -101,9 +124,9 @@ float krakendsp::Delay::process(float sample) {
 }
 
 krakendsp::Stereo krakendsp::Delay::process(Stereo sample) {
-    Stereo delayedSample = {0.0f, 0.0f};
-    Stereo feedbackSample = {0.0f, 0.0f};
-    Stereo output = {0.0f, 0.0f};
+    Stereo delayedSample;
+    Stereo feedbackSample;
+    Stereo output;
 
     delayedSample.left = ringBuffer1.getNextSample();
     feedbackSample.left = delayedSample.left * feedback;

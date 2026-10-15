@@ -8,7 +8,7 @@ namespace krakendsp
 {
     class Tremolo : public MultiFX {
         public:
-            Tremolo() = default;
+            Tremolo();
             Tremolo(float depth_, float rate_, float sampleRate_);
             ~Tremolo() override = default;
 

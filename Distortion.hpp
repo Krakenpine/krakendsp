@@ -49,6 +49,10 @@ namespace krakendsp
 
             bool getInterpolationUpsampleMode();
 
+            FileType getFileType() const override;
+            std::vector<AcceptedFile> getAcceptedFiles() const override;
+            void setFile(const FXFile& file, size_t fileIndex) override;
+
             std::vector<Log> getLog() const override;
 
             void setFilter1Freq(float freq);
@@ -72,18 +76,39 @@ namespace krakendsp
 
             std::string name = "Distortion";
             std::vector<krakendsp::FXControl> controls = {
-                krakendsp::FXControl{"Gain", 1.0f, "", 0.0f, 1.0f, 0},
-                krakendsp::FXControl{"Filter1 Freq", 10000.0f, "Hz", 10.0f, 20000.0f, 1},
-                krakendsp::FXControl{"Filter1 Type", 0.0f, "", 0.0f, 5.0f, 2}
+                krakendsp::FXControl{
+                    .name = "Gain",
+                    .displayMultiplier = 1.0f,
+                    .unit = "", 
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 0
+                },
+                krakendsp::FXControl{
+                    .name = "Filter1 Freq",
+                    .displayMultiplier = 1.0f,
+                    .unit = "Hz",
+                    .valueMin = 10.0f,
+                    .valueMax = 20000.0f,
+                    .index = 1
+                },
+                krakendsp::FXControl{
+                    .name = "Filter1 Type",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 5.0f,
+                    .index = 2
+                }
             };
 
             std::vector<krakendsp::FXSubType> types = {
-                krakendsp::FXSubType{"Raw", 0},
-                krakendsp::FXSubType{"Softclip", 1},
-                krakendsp::FXSubType{"Hardclip", 2},
-                krakendsp::FXSubType{"MetalZone", 3},
-                krakendsp::FXSubType{"Wavefolder", 4},
-                krakendsp::FXSubType{"Clean", 5}
+                krakendsp::FXSubType{.name = "Raw", .typeID = 0},
+                krakendsp::FXSubType{.name = "Softclip", .typeID = 1},
+                krakendsp::FXSubType{.name = "Hardclip", .typeID = 2},
+                krakendsp::FXSubType{.name = "MetalZone", .typeID = 3},
+                krakendsp::FXSubType{.name = "Wavefolder", .typeID = 4},
+                krakendsp::FXSubType{.name = "Clean", .typeID = 5}
             };
 
             float processRaw(float input);
@@ -108,7 +133,7 @@ namespace krakendsp
             void decimate4xOversampleBufferStereo();
             void decimate2xOversampleBufferStereo();
 
-            const std::array<float, 47> aaFilterCoeffs = {
+            std::array<float, 47> aaFilterCoeffs = {
                 -0.001126702003683413,
                 0.000000000000000008,
                 0.002205942120063343,
@@ -196,7 +221,7 @@ namespace krakendsp
             float previousSampleL = 0.0f;
             float previousSampleR = 0.0f;
 
-            const int halfFilterSize = static_cast<int>(aaFilterCoeffs.size() / 2);
+            int halfFilterSize = static_cast<int>(aaFilterCoeffs.size() / 2);
 
             bool interpolationUpsample = false;
 

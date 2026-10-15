@@ -81,32 +81,32 @@ krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
     for (size_t i = 0; i < upsampleBufferLength; i++) {
         switch (currentType) {
             case 0:
-                upsampleBufferL[i] = processRaw(upsampleBufferL[i]);
-                upsampleBufferR[i] = processRaw(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processRaw(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processRaw(upsampleBufferR.at(i));
                 break;
             case 1:
-                upsampleBufferL[i] = processSoftClip(upsampleBufferL[i]);
-                upsampleBufferR[i] = processSoftClip(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processSoftClip(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processSoftClip(upsampleBufferR.at(i));
                 break;
             case 2:
-                upsampleBufferL[i] = processHardClip(upsampleBufferL[i]);
-                upsampleBufferR[i] = processHardClip(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processHardClip(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processHardClip(upsampleBufferR.at(i));
                 break;
             case 3:
-                upsampleBufferL[i] = processHardClip(upsampleBufferL[i]);
-                upsampleBufferR[i] = processHardClip(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processHardClip(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processHardClip(upsampleBufferR.at(i));
                 break;
             case 4:
-                upsampleBufferL[i] = processWavefolder(upsampleBufferL[i]);
-                upsampleBufferR[i] = processWavefolder(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processWavefolder(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processWavefolder(upsampleBufferR.at(i));
                 break;
             case 5:
-                upsampleBufferL[i] = processClean(upsampleBufferL[i]);
-                upsampleBufferR[i] = processClean(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processClean(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processClean(upsampleBufferR.at(i));
                 break;
             default:
-                upsampleBufferL[i] = processRaw(upsampleBufferL[i]);
-                upsampleBufferR[i] = processRaw(upsampleBufferR[i]);
+                upsampleBufferL.at(i) = processRaw(upsampleBufferL.at(i));
+                upsampleBufferR.at(i) = processRaw(upsampleBufferR.at(i));
                 break;
         }
     }
@@ -325,8 +325,8 @@ void krakendsp::Distortion::applyInterpolationTo8xInBuffer(Stereo sample) {
 }
 
 void krakendsp::Distortion::applyFilterToBufferMono(bool inBuffer) {
-    float* bufferPtr;
-    size_t* bufferIndexPtr;
+    float* bufferPtr = nullptr;
+    size_t* bufferIndexPtr = nullptr;
     if (upsampleBufferLength == 2) {
         if (inBuffer) {
             bufferPtr = aa2xInBufferL.data();
@@ -729,4 +729,17 @@ void krakendsp::Distortion::setFilter1Q(float q) {
 
 float krakendsp::Distortion::getFilter1Q() {
     return filter1.getControlValueRaw(2);
+}
+
+krakendsp::FileType krakendsp::Distortion::getFileType() const {
+    return krakendsp::FileType::None;
+}
+
+std::vector<krakendsp::AcceptedFile> krakendsp::Distortion::getAcceptedFiles() const {
+    std::vector<krakendsp::AcceptedFile> acceptedFiles;
+    return acceptedFiles;
+}
+
+void krakendsp::Distortion::setFile(const krakendsp::FXFile& file, size_t fileIndex) {
+    // Implementation for setting the file goes here
 }

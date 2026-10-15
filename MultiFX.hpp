@@ -22,13 +22,31 @@ struct FXSubType {
 };
 
 struct Stereo {
-    float left;
-    float right;
+    float left = 0.0f;
+    float right = 0.0f;
 };
 
 struct Log {
     std::string text;
     float value;
+};
+
+enum class FileType {
+    IR,
+    NAM,
+    None
+};
+
+struct FXFile {
+    std::string name;
+    std::string path;
+    FileType type;
+    std::string description;
+    char* fileBuffer;
+};
+
+struct AcceptedFile {
+    std::string description;
 };
 
 inline float scaleValue(float min, float max, float normalizedValue) {
@@ -63,6 +81,11 @@ class MultiFX {
         
         virtual void setType(int index) = 0;
         virtual void setControl(int index, float value) = 0;
+
+        virtual FileType getFileType() const = 0;
+        virtual std::vector<AcceptedFile> getAcceptedFiles() const = 0;
+
+        virtual void setFile(const FXFile& file, size_t fileIndex) = 0;
 
         virtual std::vector<Log> getLog() const = 0;
 };

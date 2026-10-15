@@ -1,12 +1,22 @@
 #include "CabinetModeler.hpp"
 
+krakendsp::CabinetModeler::CabinetModeler() : 
+    samplerate(48000.0f),
+    isMono(true),
+    IRsum(0.0f) {
+        for (size_t i = 0; i < 1115; i++) {
+            FourByTwelve57CloseFloat[i] = static_cast<float>(FourByTwelve57Close[i]) / 32767.0f;
+            IRsum += static_cast<float>(fabs(FourByTwelve57CloseFloat[i]));
+        }
+    }
+
 krakendsp::CabinetModeler::CabinetModeler(float samplerate_, bool isMono_) : 
     samplerate(samplerate_),
-    isMono(isMono_) {
-        IRsum = 0.0f;
+    isMono(isMono_),
+    IRsum(0.0f) {
         for (int i = 0; i < 1115; i++) {
-            FourByTwelve57CloseFloat[i] = static_cast<float>(FourByTwelve57Close[i]) / 32767.0f;
-            IRsum += fabs(FourByTwelve57CloseFloat[i]);
+            FourByTwelve57CloseFloat.at(i) = static_cast<float>(FourByTwelve57Close.at(i)) / 32767.0f;
+            IRsum += static_cast<float>(fabs(FourByTwelve57CloseFloat.at(i)));
         }
     }
 
@@ -24,7 +34,7 @@ float krakendsp::CabinetModeler::process(float sample) {
 }
 
 krakendsp::Stereo krakendsp::CabinetModeler::process(Stereo sample) {
-    Stereo output = {0.0f, 0.0f};
+    Stereo output;
     output.left = process(sample.left);
     output.right = output.left;
     return output;

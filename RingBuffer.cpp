@@ -10,6 +10,7 @@ krakendsp::RingBuffer::RingBuffer() :
     readHead(0),
     readHeadDecimal(0.0f),
     delayLength(1),
+    delayLengthTarget(1),
     bufferNonDynamic(nullptr),
     isDynamic(true) { }
 
@@ -43,7 +44,7 @@ float krakendsp::RingBuffer::getNextSample() {
     size_t readIndex = (writeHead - lengthWhole + bufferSize) % bufferSize;
     size_t prevReadIndex = (readIndex - 1 + bufferSize) % bufferSize;
 
-    float sample;
+    float sample = 0.0f;
 
     if (isDynamic) {
         sample = buffer[readIndex] * (1.0f - readHeadDecimal) + readHeadDecimal * buffer[prevReadIndex];

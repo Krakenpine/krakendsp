@@ -2,12 +2,22 @@
 #include "LFO.hpp"
 #include <algorithm>
 
+krakendsp::Tremolo::Tremolo() :
+    depth(0.5f),
+    rate(1.0f),
+    sampleRate(48000.0f),
+    rateNormalized(1.0f)
+{
+    lfo.setFrequency(rate);
+    lfo.setSampleRate(sampleRate);
+}
+
 krakendsp::Tremolo::Tremolo(float depth_, float rate_, float sampleRate_) :
     depth(depth_),
     rate(rate_),
-    sampleRate(sampleRate_)
+    sampleRate(sampleRate_),
+    rateNormalized(rate_)
 {
-    rateNormalized = rate;
     lfo.setFrequency(rate);
     lfo.setSampleRate(sampleRate);
 }

@@ -14,7 +14,6 @@ namespace krakendsp
     class Chorus : public krakendsp::MultiFX
     {
         public:
-            Chorus() = default;
             Chorus(float rate_, float depth_, float minDepth_, float mix_, float feedback_, float samplerate_, size_t bufferSize_, float* buffer1_, float* buffer2_, bool isMono_);
             ~Chorus() override = default;
 
@@ -51,6 +50,11 @@ namespace krakendsp
             void setFeedback(float feedback_);
             void setSamplerate(float samplerate_);
 
+            FileType getFileType() const override;
+            std::vector<AcceptedFile> getAcceptedFiles() const override;
+
+            void setFile(const FXFile& file, size_t fileIndex) override;
+
             std::vector<Log> getLog() const override;
 
         private:
@@ -77,15 +81,52 @@ namespace krakendsp
 
             std::string name = "Chorus";
             std::vector<krakendsp::FXControl> controls = {
-                {"Rate", 10.0f, "Hz", 0.1f, 10.0f, 0},
-                {"Depth", 50.0f, "ms", 5.0f, 50.0f, 1},
-                {"Min depth", 50.0f, "ms", 1.0f, 20.0f, 2},
-                {"Mix", 1.0f, "", 0.0f, 1.0f, 3},
-                {"Feedback", 1.0f, "", 0.0f, 1.0f, 4}
+                {
+                    .name = "Rate",
+                    .displayMultiplier = 10.0f,
+                    .unit = "Hz",
+                    .valueMin = 0.1f,
+                    .valueMax = 10.0f,
+                    .index = 0},
+                krakendsp::FXControl{
+                    .name = "Depth",
+                    .displayMultiplier = 50.0f,
+                    .unit = "ms",
+                    .valueMin = 5.0f,
+                    .valueMax = 50.0f,
+                    .index = 1
+                },
+                krakendsp::FXControl{
+                    .name = "Min depth",
+                    .displayMultiplier = 50.0f,
+                    .unit = "ms",
+                    .valueMin = 1.0f,
+                    .valueMax = 20.0f,
+                    .index = 2
+                },
+                krakendsp::FXControl{
+                    .name = "Mix",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 3
+                },
+                krakendsp::FXControl{
+                    .name = "Feedback",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 4
+                }
             };
 
             std::vector<krakendsp::FXSubType> types = {
-                krakendsp::FXSubType{"Standard", 0}
+                krakendsp::FXSubType{
+                    .name = "Standard",
+                    .typeID = 0
+                }
             };
 
             int type = 0;

@@ -1,14 +1,29 @@
 #include "Chorus.hpp"
 #include <algorithm>
 
-krakendsp::Chorus::Chorus(float rate_, float depth_, float minDepth_, float mix_, float feedback_, float samplerate_, size_t bufferSize_, float* buffer1_, float* buffer2_, bool isMono_) :
-    rate(rate_),
-    depth(depth_),
-    minDepth(minDepth_),
+krakendsp::Chorus::Chorus(
+    float rate_,
+    float depth_,
+    float minDepth_,
+    float mix_,
+    float feedback_,
+    float samplerate_,
+    size_t bufferSize_,
+    float* buffer1_,
+    float* buffer2_,
+    bool isMono_) :
+    rateNormalized(rate_),
+    rate(scaleValue(controls[0].valueMin, controls[0].valueMax, rateNormalized)),
+    depthNormalized(depth_),
+    depth(scaleValue(controls[1].valueMin, controls[1].valueMax, depthNormalized)),
+    minDepthNormalized(minDepth_),
+    minDepth(scaleValue(controls[2].valueMin, controls[2].valueMax, minDepthNormalized)),
     mix(mix_),
     feedback(feedback_),
     samplerate(samplerate_),
-    isMono(isMono_)
+    isMono(isMono_),
+    delayMinLengthSamples(MSToSamples(minDepth_, samplerate_)),
+    delayMaxLengthSamples(MSToSamples(minDepth_ + depth_, samplerate_))
     {
         lfo = LFO(rate_, samplerate_);
         lfo.setType(krakendsp::LFOType::SINE);
@@ -23,7 +38,7 @@ float krakendsp::Chorus::process(float sample) {
 }
 
 krakendsp::Stereo krakendsp::Chorus::process(Stereo sample) {
-    Stereo output = {0.0f, 0.0f};
+    Stereo output;
     float lfoValue = lfo.getNextSampleUnipolar();
     float delayLengthInSamples = scaleValue(delayMinLengthSamples, delayMaxLengthSamples, lfoValue);
     delay1.setLength(delayLengthInSamples);

@@ -35,6 +35,10 @@ namespace krakendsp
             void setType(int index) override;
             void setControl(int index, float value) override;
 
+            FileType getFileType() const override;
+            std::vector<AcceptedFile> getAcceptedFiles() const override;
+            void setFile(const FXFile& file, size_t fileIndex) override;
+
             std::vector<Log> getLog() const override;
 
         private:
@@ -57,11 +61,11 @@ namespace krakendsp
             float b1 = 1.0f;
             float b2 = 1.0f;
 
-            Stereo x0 = {0.0f, 0.0f};
-            Stereo x1 = {0.0f, 0.0f};
-            Stereo x2 = {0.0f, 0.0f};
-            Stereo y1 = {0.0f, 0.0f};
-            Stereo y2 = {0.0f, 0.0f};
+            Stereo x0;
+            Stereo x1;
+            Stereo x2;
+            Stereo y1;
+            Stereo y2;
 
             void calculateCoeffs();
             void calculateLPFCoeffs();
@@ -75,17 +79,38 @@ namespace krakendsp
 
             std::string name = "Biquad filter";
             std::vector<krakendsp::FXControl> controls = {
-                krakendsp::FXControl{"Frequency", 1.0f, "Hz", 1.0f, 20000.0f, 0},
-                krakendsp::FXControl{"Gain", 1.0f, "dB", 0.0f, 1.0f, 1},
-                krakendsp::FXControl{"Q", 1.0f, "", 0.0f, 10.0f, 2}
+                krakendsp::FXControl{
+                    .name = "Frequency",
+                    .displayMultiplier = 1.0f,
+                    .unit = "Hz",
+                    .valueMin = 1.0f,
+                    .valueMax = 20000.0f,
+                    .index = 0
+                },
+                krakendsp::FXControl{
+                    .name = "Gain",
+                    .displayMultiplier = 1.0f,
+                    .unit = "dB",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 1
+                },
+                krakendsp::FXControl{
+                    .name = "Q",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 10.0f,
+                    .index = 2
+                }
             };
             std::vector<krakendsp::FXSubType> types = {
-                krakendsp::FXSubType{"Lowpass", 0},
-                krakendsp::FXSubType{"Highpass", 1},
-                krakendsp::FXSubType{"Bandpass", 2},
-                krakendsp::FXSubType{"Peak", 3},
-                krakendsp::FXSubType{"Lowshelf", 4},
-                krakendsp::FXSubType{"Highshelf", 5}
+                krakendsp::FXSubType{ .name = "Lowpass",   .typeID = 0},
+                krakendsp::FXSubType{ .name = "Highpass",  .typeID = 1},
+                krakendsp::FXSubType{ .name = "Bandpass",  .typeID = 2},
+                krakendsp::FXSubType{ .name = "Peak",      .typeID = 3},
+                krakendsp::FXSubType{ .name = "Lowshelf",  .typeID = 4},
+                krakendsp::FXSubType{ .name = "Highshelf", .typeID = 5}
             };
 
     };
