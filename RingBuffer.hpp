@@ -10,7 +10,7 @@ namespace krakendsp
         public:
             RingBuffer();
             RingBuffer(size_t size);
-            RingBuffer(float* buffer_, size_t size_);
+            RingBuffer(std::vector<float>* buffer_);
             ~RingBuffer() = default;
 
             float getNextSample();
@@ -25,13 +25,12 @@ namespace krakendsp
 
         private:
             std::vector<float> buffer;
+            std::vector<float>* bufferPtr;
             size_t bufferSize;
             size_t writeHead;
             size_t readHead;
             float readHeadDecimal;
             float delayLength;
-            float* bufferNonDynamic;
-            bool isDynamic;
             float delayLengthTarget;
 
             void adjustDelayLength();

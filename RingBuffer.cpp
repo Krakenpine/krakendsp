@@ -6,35 +6,32 @@
 
 krakendsp::RingBuffer::RingBuffer() : 
     bufferSize(1),
+    bufferPtr(&buffer),
     writeHead(0),
     readHead(0),
     readHeadDecimal(0.0f),
     delayLength(1),
-    delayLengthTarget(1),
-    bufferNonDynamic(nullptr),
-    isDynamic(true) { }
+    delayLengthTarget(1) { }
 
 krakendsp::RingBuffer::RingBuffer(size_t size) :
     bufferSize(size),
+    bufferPtr(&buffer),
     writeHead(0),
     readHead(0),
     readHeadDecimal(0.0f),
     delayLength(static_cast<float>(size) - 1),
-    delayLengthTarget(static_cast<float>(size) - 1),
-    bufferNonDynamic(nullptr),
-    isDynamic(true) {
+    delayLengthTarget(static_cast<float>(size) - 1) {
         buffer.resize(size);
     }
 
-krakendsp::RingBuffer::RingBuffer(float* buffer_, size_t size) :
-    bufferSize(size),
+krakendsp::RingBuffer::RingBuffer(std::vector<float>* buffer_) :
+    bufferSize(buffer_->size()),
+    bufferPtr(buffer_),
     writeHead(0),
     readHead(0),
     readHeadDecimal(0.0f),
-    delayLength(static_cast<float>(size) - 1),
-    delayLengthTarget(static_cast<float>(size) - 1),
-    bufferNonDynamic(buffer_),
-    isDynamic(false) { }
+    delayLength(static_cast<float>(buffer_->size()) - 1),
+    delayLengthTarget(static_cast<float>(buffer_->size()) - 1) { }
 
 float krakendsp::RingBuffer::getNextSample() {
     adjustDelayLength();
@@ -46,28 +43,16 @@ float krakendsp::RingBuffer::getNextSample() {
 
     float sample = 0.0f;
 
-    if (isDynamic) {
-        sample = buffer[readIndex] * (1.0f - readHeadDecimal) + readHeadDecimal * buffer[prevReadIndex];
-    } else {
-        sample = bufferNonDynamic[readIndex] * (1.0f - readHeadDecimal) + readHeadDecimal * bufferNonDynamic[prevReadIndex];
-    }
-
+    sample = buffer[readIndex] * (1.0f - readHeadDecimal) + readHeadDecimal * buffer[prevReadIndex];
     return sample;
 }
 
 void krakendsp::RingBuffer::writeNextSample(float sample) {
     if (writeHead < bufferSize) {
-        if (isDynamic) {
-            buffer[writeHead] = sample;
-        } else {
-            if (bufferNonDynamic != nullptr) {
-                bufferNonDynamic[writeHead] = sample;
-            }
-        }
-
-        writeHead = (writeHead + 1) % bufferSize;
+        buffer[writeHead] = sample;
     }
-
+    
+    writeHead = (writeHead + 1) % bufferSize;
 }
 
 float krakendsp::RingBuffer::getNextAndWriteSample(float newSample) {
