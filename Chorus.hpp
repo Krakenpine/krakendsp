@@ -81,7 +81,7 @@ namespace krakendsp
 
             std::string name = "Chorus";
             std::vector<krakendsp::FXControl> controls = {
-                {
+                krakendsp::FXControl{
                     .name = "Rate",
                     .displayMultiplier = 10.0f,
                     .unit = "Hz",

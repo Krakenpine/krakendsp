@@ -195,3 +195,16 @@ std::string krakendsp::Chorus::getName() const {
 std::vector<krakendsp::Log> krakendsp::Chorus::getLog() const {
     return log;
 }
+
+krakendsp::FileType krakendsp::Chorus::getFileType() const {
+    return krakendsp::FileType::None;
+}
+
+std::vector<krakendsp::AcceptedFile> krakendsp::Chorus::getAcceptedFiles() const {
+    std::vector<krakendsp::AcceptedFile> acceptedFiles;
+    return acceptedFiles;
+}
+
+void krakendsp::Chorus::setFile(const krakendsp::FXFile& file, size_t fileIndex) {
+    // Implementation for setting the file goes here
+}
