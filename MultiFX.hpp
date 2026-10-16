@@ -97,14 +97,14 @@ class MultiFX {
         virtual std::string getName() const = 0;
         virtual std::vector<FXSubType> getTypes() const = 0;
         virtual FXSubType getType() const = 0;
-        virtual FXSubType getType(int index) const = 0;
+        virtual FXSubType getType(unsigned char index) const = 0;
         virtual std::vector<FXControl> getControls() const = 0;
-        virtual FXControl getControl(int index) const = 0;
-        virtual float getControlValue(int index) const = 0;
-        virtual float getControlValueRaw(int index) const = 0;
+        virtual FXControl getControl(unsigned char index) const = 0;
+        virtual float getControlValue(unsigned char index) const = 0;
+        virtual float getControlValueRaw(unsigned char index) const = 0;
         
-        virtual void setType(int index) = 0;
-        virtual void setControl(int index, float value) = 0;
+        virtual void setType(unsigned char index) = 0;
+        virtual void setControl(unsigned char index, float value) = 0;
 
         virtual FileType getFileType() const = 0;
         virtual std::vector<AcceptedFile> getAcceptedFiles() const = 0;

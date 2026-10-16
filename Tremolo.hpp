@@ -18,14 +18,14 @@ namespace krakendsp
             std::string getName() const override;
             std::vector<FXSubType> getTypes() const override;
             FXSubType getType() const override;
-            FXSubType getType(int index) const override;
+            FXSubType getType(unsigned char index) const override;
             std::vector<FXControl> getControls() const override;
-            FXControl getControl(int index) const override;
-            float getControlValue(int index) const override;
-            float getControlValueRaw(int index) const override;
+            FXControl getControl(unsigned char index) const override;
+            float getControlValue(unsigned char index) const override;
+            float getControlValueRaw(unsigned char index) const override;
 
-            void setType(int index) override;
-            void setControl(int index, float value) override;
+            void setType(unsigned char index) override;
+            void setControl(unsigned char index, float value) override;
 
             void setDepth(float depth_);
             void setRate(float rate_);

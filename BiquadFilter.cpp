@@ -178,7 +178,7 @@ void krakendsp::BiquadFilter::calculateHSCoeffs() {
     a2 = (A + 1.0f) - (A - 1.0f) * cosOmega - 2.0f * sqrtf(A) * alpha;    
 }
 
-void krakendsp::BiquadFilter::setControl(int index, float value) {
+void krakendsp::BiquadFilter::setControl(unsigned char index, float value) {
     switch (index) {
         case 0: setFrequency(value); break;
         case 1: setGain(value); break;
@@ -187,7 +187,7 @@ void krakendsp::BiquadFilter::setControl(int index, float value) {
     }
 }
 
-float krakendsp::BiquadFilter::getControlValue(int index) const {
+float krakendsp::BiquadFilter::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return frequency;
         case 1: return gain;
@@ -196,7 +196,7 @@ float krakendsp::BiquadFilter::getControlValue(int index) const {
     }
 }
 
-krakendsp::FXControl krakendsp::BiquadFilter::getControl(int index) const {
+krakendsp::FXControl krakendsp::BiquadFilter::getControl(unsigned char index) const {
     switch (index) {
         case 0: return controls[0];
         case 1: return controls[1];
@@ -205,7 +205,7 @@ krakendsp::FXControl krakendsp::BiquadFilter::getControl(int index) const {
     }
 }
 
-float krakendsp::BiquadFilter::getControlValueRaw(int index) const {
+float krakendsp::BiquadFilter::getControlValueRaw(unsigned char index) const {
     switch (index) {
         case 0: return frequency;
         case 1: return gain;
@@ -214,7 +214,7 @@ float krakendsp::BiquadFilter::getControlValueRaw(int index) const {
     }
 }
 
-krakendsp::FXSubType krakendsp::BiquadFilter::getType(int index) const {
+krakendsp::FXSubType krakendsp::BiquadFilter::getType(unsigned char index) const {
     return types[index];
 }
 
@@ -222,8 +222,8 @@ krakendsp::FXSubType krakendsp::BiquadFilter::getType() const {
     return types[currentType];
 }
 
-void krakendsp::BiquadFilter::setType(int index) {
-    if (index >= 0 && index < static_cast<int>(types.size())) {
+void krakendsp::BiquadFilter::setType(unsigned char index) {
+    if (index < static_cast<unsigned char>(types.size())) {
         currentType = index;
         calculateCoeffs();
     }

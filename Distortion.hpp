@@ -29,18 +29,18 @@ namespace krakendsp
             std::string getName() const override;
             std::vector<krakendsp::FXSubType> getTypes() const override;
             krakendsp::FXSubType getType() const override;
-            krakendsp::FXSubType getType(int index) const override;
+            krakendsp::FXSubType getType(unsigned char index) const override;
             std::vector<krakendsp::FXControl> getControls() const override;
-            krakendsp::FXControl getControl(int index) const override;
-            float getControlValue(int index) const override;
-            float getControlValueRaw(int index) const override;
+            krakendsp::FXControl getControl(unsigned char index) const override;
+            float getControlValue(unsigned char index) const override;
+            float getControlValueRaw(unsigned char index) const override;
 
             float getGain() const;
             size_t getOversample() const;
             float getSamplerate() const;
             
-            void setType(int index) override;
-            void setControl(int index, float value) override;
+            void setType(unsigned char index) override;
+            void setControl(unsigned char index, float value) override;
 
             void setGain(float gain_);
             void setOversample(size_t oversample_);
@@ -56,9 +56,9 @@ namespace krakendsp
             std::vector<Log> getLog() const override;
 
             void setFilter1Freq(float freq);
-            void setFilter1Type(size_t type);
+            void setFilter1Type(unsigned char type);
             float getFilter1Freq();
-            std::string getFilter1Type();
+            krakendsp::FXSubType getFilter1Type();
 
             void setFilter1Gain(float gain);
             float getFilter1Gain();

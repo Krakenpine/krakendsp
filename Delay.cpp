@@ -145,7 +145,7 @@ krakendsp::Stereo krakendsp::Delay::process(Stereo sample) {
     return output;
 }
 
-krakendsp::FXControl krakendsp::Delay::getControl(int index) const {
+krakendsp::FXControl krakendsp::Delay::getControl(unsigned char index) const {
     switch (index) {
         case 0: return controls[0];
         case 1: return controls[1];
@@ -158,7 +158,7 @@ std::string krakendsp::Delay::getName() const {
     return name;
 }
 
-void krakendsp::Delay::setControl(int index, float value) {
+void krakendsp::Delay::setControl(unsigned char index, float value) {
     switch (index) {
         case 0: setFeedback(value); break;
         case 1: setMix(value); break;
@@ -167,7 +167,7 @@ void krakendsp::Delay::setControl(int index, float value) {
     }
 }
 
-float krakendsp::Delay::getControlValue(int index) const {
+float krakendsp::Delay::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return getFeedback();
         case 1: return getMix();
@@ -176,7 +176,7 @@ float krakendsp::Delay::getControlValue(int index) const {
     }
 }
 
-float krakendsp::Delay::getControlValueRaw(int index) const {
+float krakendsp::Delay::getControlValueRaw(unsigned char index) const {
     switch (index) {
         case 0: return feedback;
         case 1: return mix;
@@ -199,7 +199,7 @@ float krakendsp::Delay::MSToSamples(float ms) const {
     return ms * samplerate / 1000.0f;
 }
 
-krakendsp::FXSubType krakendsp::Delay::getType(int index) const {
+krakendsp::FXSubType krakendsp::Delay::getType(unsigned char index) const {
     return types[0];
 }
 
@@ -207,7 +207,7 @@ krakendsp::FXSubType krakendsp::Delay::getType() const {
     return types[0];
 }
 
-void krakendsp::Delay::setType(int index) {
+void krakendsp::Delay::setType(unsigned char index) {
     // Currently only one type, so no action needed{
 }
 

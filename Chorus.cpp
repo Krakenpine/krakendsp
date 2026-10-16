@@ -118,7 +118,7 @@ float krakendsp::Chorus::getFeedback() const {
     return feedback;
 }
 
-float krakendsp::Chorus::getControlValue(int index) const {
+float krakendsp::Chorus::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return getRateNonNormalized();
         case 1: return getDepthNonNormalized();
@@ -129,7 +129,7 @@ float krakendsp::Chorus::getControlValue(int index) const {
     }
 }
 
-float krakendsp::Chorus::getControlValueRaw(int index) const {
+float krakendsp::Chorus::getControlValueRaw(unsigned char index) const {
     switch (index) {
         case 0: return getRate();
         case 1: return getDepth();
@@ -144,7 +144,7 @@ std::vector<krakendsp::FXControl> krakendsp::Chorus::getControls() const {
     return controls;
 }
 
-krakendsp::FXControl krakendsp::Chorus::getControl(int index) const {
+krakendsp::FXControl krakendsp::Chorus::getControl(unsigned char index) const {
     switch (index) {
         case 0: return controls[0];
         case 1: return controls[1];
@@ -155,7 +155,7 @@ krakendsp::FXControl krakendsp::Chorus::getControl(int index) const {
     }
 }
 
-void krakendsp::Chorus::setControl(int index, float value) {
+void krakendsp::Chorus::setControl(unsigned char index, float value) {
     switch (index) {
         case 0: setRate(value); break;
         case 1: setDepth(value); break;
@@ -170,7 +170,7 @@ std::vector<krakendsp::FXSubType> krakendsp::Chorus::getTypes() const {
     return types;
 }
 
-krakendsp::FXSubType krakendsp::Chorus::getType(int index) const {
+krakendsp::FXSubType krakendsp::Chorus::getType(unsigned char index) const {
     switch (index) {
         case 0: return types[0];
         default: return krakendsp::FXSubType{};
@@ -181,7 +181,7 @@ krakendsp::FXSubType krakendsp::Chorus::getType() const {
     return types[type];
 }
 
-void krakendsp::Chorus::setType(int index) {
+void krakendsp::Chorus::setType(unsigned char index) {
     switch (index) {
         case 0: break; // only one type at the moment
         default: break;

@@ -76,6 +76,7 @@ float krakendsp::Distortion::process(float sample) {
         }
     }
     outSample = downsampleStereo().left;
+    outSample = filter1.process(outSample);
     return outSample;
 }
 
@@ -115,7 +116,7 @@ krakendsp::Stereo krakendsp::Distortion::process(Stereo sample) {
         }
     }
     outSample = downsampleStereo();
-    //outSample = filter1.process(outSample);
+    outSample = filter1.process(outSample);
     return outSample;
 }
 
@@ -318,28 +319,28 @@ std::string krakendsp::Distortion::getName() const {
     return name;
 }
 
-void krakendsp::Distortion::setControl(int index, float value) {
+void krakendsp::Distortion::setControl(unsigned char index, float value) {
     switch (index) {
         case 0: setGain(value); break;
         default: break;
     }
 }
 
-float krakendsp::Distortion::getControlValue(int index) const {
+float krakendsp::Distortion::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return getGain();
         default: return 0;
     }
 }
 
-krakendsp::FXControl krakendsp::Distortion::getControl(int index) const {
+krakendsp::FXControl krakendsp::Distortion::getControl(unsigned char index) const {
     switch (index) {
         case 0: return controls[0];
         default: return krakendsp::FXControl{};
     }
 }
 
-float krakendsp::Distortion::getControlValueRaw(int index) const {
+float krakendsp::Distortion::getControlValueRaw(unsigned char index) const {
     switch (index) {
         case 0: return gain;
         default: return 0.0f;
@@ -354,13 +355,13 @@ std::vector<krakendsp::FXSubType> krakendsp::Distortion::getTypes() const {
     return types;
 }
 
-void krakendsp::Distortion::setType(int index) {
+void krakendsp::Distortion::setType(unsigned char index) {
     if (index >= 0 && index < static_cast<int>(types.size())) {
         currentType = index;
     }
 }
 
-krakendsp::FXSubType krakendsp::Distortion::getType(int index) const {
+krakendsp::FXSubType krakendsp::Distortion::getType(unsigned char index) const {
     return types[index];
 }
 
@@ -499,17 +500,17 @@ void krakendsp::Distortion::setFilter1Freq(float freq) {
     filter1.setFrequency(freq);
 }
 
-void krakendsp::Distortion::setFilter1Type(size_t type) {
-    filter1.setType(static_cast<int>(type));
+void krakendsp::Distortion::setFilter1Type(unsigned char type) {
+    filter1.setType(type);
 }
 
 float krakendsp::Distortion::getFilter1Freq() {
     return filter1.getControlValueRaw(0);
 }
 
-std::string krakendsp::Distortion::getFilter1Type() {
+krakendsp::FXSubType krakendsp::Distortion::getFilter1Type() {
     auto type = filter1.getType();
-    return type.name;
+    return type;
 }
 
 void krakendsp::Distortion::setFilter1Gain(float gain) {

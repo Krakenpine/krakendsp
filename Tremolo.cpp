@@ -54,7 +54,7 @@ void krakendsp::Tremolo::setLFOType(LFOType type_) {
     lfo.setType(type_);
 }
 
-krakendsp::FXControl krakendsp::Tremolo::getControl(int index) const {
+krakendsp::FXControl krakendsp::Tremolo::getControl(unsigned char index) const {
     switch (index) {
         case 0: return controls[0];
         case 1: return controls[1];
@@ -74,7 +74,7 @@ std::vector<krakendsp::FXControl> krakendsp::Tremolo::getControls() const {
     return controls;
 }
 
-void krakendsp::Tremolo::setControl(int index, float value) {
+void krakendsp::Tremolo::setControl(unsigned char index, float value) {
     switch (index) {
         case 0: setDepth(value); break;
         case 1: setRate(value); break;
@@ -86,7 +86,7 @@ void krakendsp::Tremolo::setControl(int index, float value) {
     }
 }
 
-float krakendsp::Tremolo::getControlValue(int index) const {
+float krakendsp::Tremolo::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return depth;
         case 1: return rateNormalized;
@@ -99,7 +99,7 @@ float krakendsp::Tremolo::getControlValue(int index) const {
     }
 }
 
-float krakendsp::Tremolo::getControlValueRaw(int index) const {
+float krakendsp::Tremolo::getControlValueRaw(unsigned char index) const {
     switch (index) {
         case 0: return depth;
         case 1: return rateNormalized;
@@ -116,7 +116,7 @@ std::vector<krakendsp::FXSubType> krakendsp::Tremolo::getTypes() const {
     return types;
 }
 
-krakendsp::FXSubType krakendsp::Tremolo::getType(int index) const {
+krakendsp::FXSubType krakendsp::Tremolo::getType(unsigned char index) const {
     return types[index];
 }
 
@@ -130,7 +130,7 @@ krakendsp::FXSubType krakendsp::Tremolo::getType() const {
     }
 }
 
-void krakendsp::Tremolo::setType(int index) {
+void krakendsp::Tremolo::setType(unsigned char index) {
     lfo.setType(static_cast<LFOType>(index));
 }
 

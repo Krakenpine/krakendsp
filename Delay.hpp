@@ -22,11 +22,11 @@ namespace krakendsp
             std::string getName() const override;
             std::vector<krakendsp::FXSubType> getTypes() const override;
             krakendsp::FXSubType getType() const override;
-            krakendsp::FXSubType getType(int index) const override;
+            krakendsp::FXSubType getType(unsigned char index) const override;
             std::vector<krakendsp::FXControl> getControls() const override;
-            krakendsp::FXControl getControl(int index) const override;
-            float getControlValue(int index) const override;
-            float getControlValueRaw(int index) const override;
+            krakendsp::FXControl getControl(unsigned char index) const override;
+            float getControlValue(unsigned char index) const override;
+            float getControlValueRaw(unsigned char index) const override;
 
             float getLength() const;
             float getLengthNormalized() const;
@@ -36,8 +36,8 @@ namespace krakendsp
             size_t getBufferSize() const;
             float getSamplerate() const;
 
-            void setType(int index) override;
-            void setControl(int index, float value) override;
+            void setType(unsigned char index) override;
+            void setControl(unsigned char index, float value) override;
 
             void setLength(float newLength);
             void setLengthNormalized(float newLengthNormalized);
