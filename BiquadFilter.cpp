@@ -95,10 +95,10 @@ void krakendsp::BiquadFilter::calculateCoeffs() {
 }
 
 void krakendsp::BiquadFilter::calculateLPFCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
     b0 = (1.0f - cosOmega) / 2.0f;
     b1 = 1.0f - cosOmega;
@@ -109,10 +109,10 @@ void krakendsp::BiquadFilter::calculateLPFCoeffs() {
 }
 
 void krakendsp::BiquadFilter::calculateHPFCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
     b0 = (1.0f + cosOmega) / 2.0f;
     b1 = -1.0f * (1.0f + cosOmega);
@@ -123,10 +123,10 @@ void krakendsp::BiquadFilter::calculateHPFCoeffs() {
 }
 
 void krakendsp::BiquadFilter::calculateBPCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
     b0 = alpha;
     b1 = 0.0f;
@@ -137,10 +137,10 @@ void krakendsp::BiquadFilter::calculateBPCoeffs() {
 }
 
 void krakendsp::BiquadFilter::calculatePeakCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
     b0 = 1.0f + alpha * A;
     b1 = -2.0f * cosOmega;
@@ -151,31 +151,31 @@ void krakendsp::BiquadFilter::calculatePeakCoeffs() {
 }
 
 void krakendsp::BiquadFilter::calculateLSCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
-    b0 = A * ((A + 1.0f) - (A - 1.0f) * cosOmega + 2.0f * sqrt(A) * alpha);
+    b0 = A * ((A + 1.0f) - (A - 1.0f) * cosOmega + 2.0f * sqrtf(A) * alpha);
     b1 = 2.0f * A * ((A - 1.0f) - (A + 1.0f) * cosOmega);
-    b2 = A * ((A + 1.0f) - (A - 1.0f) * cosOmega - 2.0f * sqrt(A) * alpha);
-    a0 = (A + 1.0f) + (A - 1.0f) * cosOmega + 2.0f * sqrt(A) * alpha;
+    b2 = A * ((A + 1.0f) - (A - 1.0f) * cosOmega - 2.0f * sqrtf(A) * alpha);
+    a0 = (A + 1.0f) + (A - 1.0f) * cosOmega + 2.0f * sqrtf(A) * alpha;
     a1 = -2.0f * ((A - 1.0f) + (A + 1.0f) * cosOmega);
-    a2 = (A + 1.0f) + (A - 1.0f) * cosOmega - 2.0f * sqrt(A) * alpha;
+    a2 = (A + 1.0f) + (A - 1.0f) * cosOmega - 2.0f * sqrtf(A) * alpha;
 }
 
 void krakendsp::BiquadFilter::calculateHSCoeffs() {
-    float A = pow(10.0f, (gain/40.0f));
+    float A = powf(10.0f, (gain/40.0f));
     omega = 2.0f * 3.14f * (frequency / samplerate);
-    alpha = sin(omega) / (2.0f * q);
-    float cosOmega = cos(omega);
+    alpha = sinf(omega) / (2.0f * q);
+    float cosOmega = cosf(omega);
 
-    b0 = A * ((A + 1.0f) + (A - 1.0f) * cosOmega + 2.0f * sqrt(A) * alpha);
+    b0 = A * ((A + 1.0f) + (A - 1.0f) * cosOmega + 2.0f * sqrtf(A) * alpha);
     b1 = -2.0f * A * ((A - 1.0f) + (A + 1.0f) * cosOmega);
-    b2 = A * ((A + 1.0f) + (A - 1.0f) * cosOmega - 2.0f * sqrt(A) * alpha);
-    a0 = (A + 1.0f) - (A - 1.0f) * cosOmega + 2.0f * sqrt(A) * alpha;
+    b2 = A * ((A + 1.0f) + (A - 1.0f) * cosOmega - 2.0f * sqrtf(A) * alpha);
+    a0 = (A + 1.0f) - (A - 1.0f) * cosOmega + 2.0f * sqrtf(A) * alpha;
     a1 = 2.0f * ((A - 1.0f) - (A + 1.0f) * cosOmega);
-    a2 = (A + 1.0f) - (A - 1.0f) * cosOmega - 2.0f * sqrt(A) * alpha;    
+    a2 = (A + 1.0f) - (A - 1.0f) * cosOmega - 2.0f * sqrtf(A) * alpha;    
 }
 
 void krakendsp::BiquadFilter::setControl(int index, float value) {
