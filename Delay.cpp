@@ -218,3 +218,16 @@ std::vector<krakendsp::FXControl> krakendsp::Delay::getControls() const {
 std::vector<krakendsp::Log> krakendsp::Delay::getLog() const {
     return log;
 }
+
+krakendsp::FileType krakendsp::Delay::getFileType() const {
+    return krakendsp::FileType::None;
+}
+
+std::vector<krakendsp::AcceptedFile> krakendsp::Delay::getAcceptedFiles() const {
+    std::vector<krakendsp::AcceptedFile> acceptedFiles;
+    return acceptedFiles;
+}
+
+void krakendsp::Delay::setFile(const krakendsp::FXFile& file, size_t fileIndex) {
+    // Implementation for setting the file goes here
+}
