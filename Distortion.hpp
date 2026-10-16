@@ -47,7 +47,7 @@ namespace krakendsp
             void setSampleRate(float samplerate_);
             void setInterpolationUpsampleMode(bool _interpolationUpsample);
 
-            bool getInterpolationUpsampleMode();
+            bool getInterpolationUpsampleMode() const;
 
             FileType getFileType() const override;
             std::vector<AcceptedFile> getAcceptedFiles() const override;
@@ -111,11 +111,11 @@ namespace krakendsp
                 krakendsp::FXSubType{.name = "Clean", .typeID = 5}
             };
 
-            float processRaw(float input);
-            float processClean(float input);
-            float processSoftClip(float input);
-            float processHardClip(float input);
-            float processWavefolder(float input);
+            float processRaw(float input) const;
+            float processClean(float input) const;
+            float processSoftClip(float input) const;
+            float processHardClip(float input) const;
+            float processWavefolder(float input) const;
 
             float samplerateWithOversample() const {
                 return samplerate * static_cast<float>(oversample);
@@ -133,87 +133,71 @@ namespace krakendsp
             void decimate4xOversampleBufferStereo();
             void decimate2xOversampleBufferStereo();
 
-            std::array<float, 47> aaFilterCoeffs = {
-                -0.001126702003683413,
-                0.000000000000000008,
-                0.002205942120063343,
-                -0.000000000000000004,
-                -0.003778553259285692,
-                0.000000000000000005,
-                0.005980596978759721,
-                -0.000000000000000007,
-                -0.008991391999285685,
-                0.000000000000000009,
-                0.013070952693427127,
-                -0.000000000000000011,
-                -0.018641963114944413,
-                0.000000000000000014,
-                0.026484712056733570,
-                -0.000000000000000016,
-                -0.038269325401513309,
-                0.000000000000000017,
-                0.058366914019430158,
-                -0.000000000000000018,
-                -0.102902879550476875,
-                0.000000000000000019,
-                0.317427854911718654,
-                0.500347685098113448,
-                0.317427854911718654,
-                0.000000000000000019,
-                -0.102902879550476875,
-                -0.000000000000000018,
-                0.058366914019430158,
-                0.000000000000000017,
-                -0.038269325401513309,
-                -0.000000000000000016,
-                0.026484712056733570,
-                0.000000000000000014,
-                -0.018641963114944413,
-                -0.000000000000000011,
-                0.013070952693427127,
-                0.000000000000000009,
-                -0.008991391999285685,
-                -0.000000000000000007,
-                0.005980596978759721,
-                0.000000000000000005,
-                -0.003778553259285690,
-                -0.000000000000000004,
-                0.002205942120063343,
-                0.000000000000000008,
-                -0.001126702003683414
+            std::vector<float> aaFilterCoeffsVector = {
+                -0.001126702003683413f,
+                0.000000000000000008f,
+                0.002205942120063343f,
+                -0.000000000000000004f,
+                -0.003778553259285692f,
+                0.000000000000000005f,
+                0.005980596978759721f,
+                -0.000000000000000007f,
+                -0.008991391999285685f,
+                0.000000000000000009f,
+                0.013070952693427127f,
+                -0.000000000000000011f,
+                -0.018641963114944413f,
+                0.000000000000000014f,
+                0.026484712056733570f,
+                -0.000000000000000016f,
+                -0.038269325401513309f,
+                0.000000000000000017f,
+                0.058366914019430158f,
+                -0.000000000000000018f,
+                -0.102902879550476875f,
+                0.000000000000000019f,
+                0.317427854911718654f,
+                0.500347685098113448f,
+                0.317427854911718654f,
+                0.000000000000000019f,
+                -0.102902879550476875f,
+                -0.000000000000000018f,
+                0.058366914019430158f,
+                0.000000000000000017f,
+                -0.038269325401513309f,
+                -0.000000000000000016f,
+                0.026484712056733570f,
+                0.000000000000000014f,
+                -0.018641963114944413f,
+                -0.000000000000000011f,
+                0.013070952693427127f,
+                0.000000000000000009f,
+                -0.008991391999285685f,
+                -0.000000000000000007f,
+                0.005980596978759721f,
+                0.000000000000000005f,
+                -0.003778553259285690f,
+                -0.000000000000000004f,
+                0.002205942120063343f,
+                0.000000000000000008f,
+                -0.001126702003683414f
             };
+            
+            std::vector<krakendsp::Stereo> aa2xInBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa2xInBufferIndexVector = 0;
+            std::vector<krakendsp::Stereo> aa4xInBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa4xInBufferIndexVector = 0;
+            std::vector<krakendsp::Stereo> aa8xInBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa8xInBufferIndexVector = 0;
+            std::vector<krakendsp::Stereo> aa2xOutBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa2xOutBufferIndexVector = 0;
+            std::vector<krakendsp::Stereo> aa4xOutBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa4xOutBufferIndexVector = 0;
+            std::vector<krakendsp::Stereo> aa8xOutBufferVector = std::vector<krakendsp::Stereo>(256);
+            size_t aa8xOutBufferIndexVector = 0;
 
-            std::array<float, 256> aa2xInBufferL = {0.0f};
-            size_t aa2xInBufferIndexL = 0;
-            std::array<float, 256> aa4xInBufferL = {0.0f};
-            size_t aa4xInBufferIndexL = 0;
-            std::array<float, 256> aa8xInBufferL = {0.0f};
-            size_t aa8xInBufferIndexL = 0;
-            std::array<float, 256> aa2xOutBufferL = {0.0f};
-            size_t aa2xOutBufferIndexL = 0;
-            std::array<float, 256> aa4xOutBufferL = {0.0f};
-            size_t aa4xOutBufferIndexL = 0;
-            std::array<float, 256> aa8xOutBufferL = {0.0f};
-            size_t aa8xOutBufferIndexL = 0;
-            std::array<float, 256> aa2xInBufferR = {0.0f};
-            size_t aa2xInBufferIndexR = 0;
-            std::array<float, 256> aa4xInBufferR = {0.0f};
-            size_t aa4xInBufferIndexR = 0;
-            std::array<float, 256> aa8xInBufferR = {0.0f};
-            size_t aa8xInBufferIndexR = 0;
-            std::array<float, 256> aa2xOutBufferR = {0.0f};
-            size_t aa2xOutBufferIndexR = 0;
-            std::array<float, 256> aa4xOutBufferR = {0.0f};
-            size_t aa4xOutBufferIndexR = 0;
-            std::array<float, 256> aa8xOutBufferR = {0.0f};
-            size_t aa8xOutBufferIndexR = 0;
+            void applyFilterToBufferStereoWithVectors(bool inBuffer, bool isMono);
 
-            void applyFilterToBufferMono(bool inBuffer);
-            void applyFilterToBufferStereo(bool inBuffer);
-
-            void applyInterpolationTo2xInBuffer(float sample);
-            void applyInterpolationTo4xInBuffer(float sample);
-            void applyInterpolationTo8xInBuffer(float sample);
             void applyInterpolationTo2xInBuffer(Stereo sample);
             void applyInterpolationTo4xInBuffer(Stereo sample);
             void applyInterpolationTo8xInBuffer(Stereo sample);
@@ -221,12 +205,13 @@ namespace krakendsp
             float previousSampleL = 0.0f;
             float previousSampleR = 0.0f;
 
-            int halfFilterSize = static_cast<int>(aaFilterCoeffs.size() / 2);
+            krakendsp::Stereo previousSample = {0.0f, 0.0f};
+
+            unsigned int halfFilterSize = static_cast<unsigned int>(aaFilterCoeffsVector.size() / 2);
 
             bool interpolationUpsample = false;
 
-            std::array<float, 8> upsampleBufferL = {0.0f};
-            std::array<float, 8> upsampleBufferR = {0.0f};
+            std::vector<krakendsp::Stereo> upsampleBufferVector = std::vector<krakendsp::Stereo>(8);
             size_t upsampleBufferLength = 1;
 
             void fillUpSampleBuffer(float sample);

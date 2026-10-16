@@ -24,6 +24,30 @@ struct FXSubType {
 struct Stereo {
     float left = 0.0f;
     float right = 0.0f;
+
+    constexpr friend Stereo operator*(float scalar, Stereo value) {
+        return Stereo{scalar * value.left, scalar * value.right};
+    }
+
+    constexpr friend Stereo operator*(Stereo value, float scalar) {
+        return Stereo{scalar * value.left, scalar * value.right};
+    }
+
+    constexpr friend Stereo operator+(float scalar, Stereo value) {
+        return Stereo{scalar + value.left, scalar + value.right};
+    }
+
+    constexpr friend Stereo operator+(Stereo value, float scalar) {
+        return Stereo{value.left + scalar, value.right + scalar};
+    }
+
+    constexpr friend Stereo operator+(Stereo a, Stereo b) {
+        return Stereo{a.left + b.left, a.right + b.right};
+    }
+
+    constexpr Stereo swapped() const {
+        return Stereo{right, left};
+    }
 };
 
 struct Log {
