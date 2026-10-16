@@ -137,3 +137,16 @@ void krakendsp::Tremolo::setType(int index) {
 std::vector<krakendsp::Log> krakendsp::Tremolo::getLog() const {
     return log;
 }
+
+krakendsp::FileType krakendsp::Tremolo::getFileType() const {
+    return krakendsp::FileType::None;
+}
+
+std::vector<krakendsp::AcceptedFile> krakendsp::Tremolo::getAcceptedFiles() const {
+    std::vector<krakendsp::AcceptedFile> acceptedFiles;
+    return acceptedFiles;
+}
+
+void krakendsp::Tremolo::setFile(const krakendsp::FXFile& file, size_t fileIndex) {
+    // Implementation for setting the file goes here
+}

@@ -32,6 +32,11 @@ namespace krakendsp
             void setLFOType(LFOType type_);
             void setSampleRate(float sampleRate_);
 
+            FileType getFileType() const override;
+            std::vector<AcceptedFile> getAcceptedFiles() const override;
+
+            void setFile(const FXFile& file, size_t fileIndex) override;
+
             std::vector<Log> getLog() const override;
 
         private:
@@ -45,19 +50,61 @@ namespace krakendsp
             std::vector<Log> log;
 
             std::string name = "Tremolo";
-            std::vector<FXControl> controls = {
-                {"Depth", 1.0f, "", 0.0f, 1.0f, 0},
-                {"Rate", 10.0f, "Hz", 0.01f, 1.0f, 1},
-                {"Horizontal Distortion", 1.0f, "", 0.01f, 0.99f, 2},
-                {"Vertical Distortion", 1.0f, "", 0.01f, 0.99f, 3},
-                {"LFO smoothing", 1.0f, "", 0.0f, 1.0f, 4}
+            std::vector<krakendsp::FXControl> controls = {
+                krakendsp::FXControl{
+                    .name ="Depth",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 0},
+                krakendsp::FXControl{
+                    .name = "Rate",
+                    .displayMultiplier = 10.0f,
+                    .unit = "Hz",
+                    .valueMin = 0.01f,
+                    .valueMax = 1.0f,
+                    .index = 1},
+                krakendsp::FXControl{
+                    .name = "Horizontal Distortion",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.01f,
+                    .valueMax = 0.99f,
+                    .index = 2},
+                krakendsp::FXControl{
+                    .name = "Vertical Distortion",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.01f,
+                    .valueMax = 0.99f,
+                    .index = 3},
+                krakendsp::FXControl{
+                    .name = "LFO smoothing",
+                    .displayMultiplier = 1.0f,
+                    .unit = "",
+                    .valueMin = 0.0f,
+                    .valueMax = 1.0f,
+                    .index = 4}
             };
 
-            std::vector<FXSubType> types = {
-                {"Sin", 0},
-                {"Square", 1},
-                {"Triangle", 2},
-                {"Sawtooth", 3}
+            std::vector<krakendsp::FXSubType> types = {
+                krakendsp::FXSubType{
+                    .name = "Sin",
+                    .typeID = 0
+                },
+                krakendsp::FXSubType{
+                    .name = "Square",
+                    .typeID = 1
+                },
+                krakendsp::FXSubType{
+                    .name = "Triangle",
+                    .typeID = 2
+                },
+                krakendsp::FXSubType{
+                    .name = "Sawtooth",
+                    .typeID = 3
+                }
             };
     };
 }
