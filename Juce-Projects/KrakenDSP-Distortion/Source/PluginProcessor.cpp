@@ -137,6 +137,26 @@ void KrakenDSPDistortionAudioProcessor::processBlock (juce::AudioBuffer<float>& 
             parameterType->setValueNotifyingHost(parameterType->convertTo0to1(static_cast<float>(distortion.getType().typeID)/static_cast<float>(distortion.getTypes().size()-1)));
         }
 
+        auto* parameterFilterFreq = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("FILTER1FREQ"));
+        if (parameterFilterFreq) {
+            parameterFilterFreq->setValueNotifyingHost(parameterFilterFreq->convertTo0to1(distortion.getFilter1Freq()));
+        }
+
+        auto* parameterFilterGain = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("FILTER1GAIN"));
+        if (parameterFilterGain) {
+            parameterFilterGain->setValueNotifyingHost(parameterFilterGain->convertTo0to1(distortion.getFilter1Gain()));
+        }
+
+        auto* parameterFilterQ = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter("FILTER1Q"));
+        if (parameterFilterQ) {
+            parameterFilterQ->setValueNotifyingHost(parameterFilterQ->convertTo0to1(distortion.getFilter1Q()));
+        }
+
+        auto* parameterFilterType = apvts.getParameter("FILTER1TYPE");
+        if (parameterFilterType) {
+            parameterFilterType->setValueNotifyingHost(parameterFilterType->convertTo0to1(static_cast<float>(distortion.getFilter1Type().typeID)/static_cast<float>(distortion.getTypes().size()-1)));
+        }
+
         if (auto* editor = getActiveEditor())
         {
             editor->repaint(); // Request a repaint of the editor
@@ -186,22 +206,60 @@ juce::AudioProcessorEditor* KrakenDSPDistortionAudioProcessor::createEditor()
 
 void KrakenDSPDistortionAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    destData.setSize(16);
+    destData.setSize(0);
     float gain = distortion.getControlValueRaw(0);
     int typeID = distortion.getType().typeID;
+    
+    float filterFreq = distortion.getFilter1Freq();
+    float filterGain = distortion.getFilter1Gain();
+    float filterQ = distortion.getFilter1Q();
+    int filterType = distortion.getFilter1Type().typeID;
+    
+    unsigned int memplace = 0;
     destData.insert(&gain, sizeof(float), 0);
-    destData.insert(&typeID, sizeof(int), sizeof(float));
+    memplace += sizeof(float);
+    destData.insert(&typeID, sizeof(int), memplace);
+    memplace += sizeof(int);
+    destData.insert(&filterFreq, sizeof(float), memplace);
+    memplace += sizeof(float);
+    destData.insert(&filterGain, sizeof(float), memplace);
+    memplace += sizeof(float);
+    destData.insert(&filterQ, sizeof(float), memplace);
+    memplace += sizeof(float);
+    destData.insert(&filterType, sizeof(int), memplace);
 }
 
 void KrakenDSPDistortionAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     float gain;
     int typeID;
+    
+    float filterFreq;
+    float filterGain;
+    float filterQ;
+    int filterType;
+    
+    unsigned int memplace = 0;
     std::memcpy(&gain, data, sizeof(float));
-    std::memcpy(&typeID, static_cast<const char*>(data) + sizeof(float), sizeof(int));
+    memplace += sizeof(float);
+    std::memcpy(&typeID, static_cast<const char*>(data) + memplace, sizeof(int));
+    memplace += sizeof(int);
+    std::memcpy(&filterFreq, static_cast<const char*>(data) + memplace, sizeof(float));
+    memplace += sizeof(float);
+    std::memcpy(&filterGain, static_cast<const char*>(data) + memplace, sizeof(float));
+    memplace += sizeof(float);
+    std::memcpy(&filterQ, static_cast<const char*>(data) + memplace, sizeof(float));
+    memplace += sizeof(float);
+    std::memcpy(&filterType, static_cast<const char*>(data) + memplace, sizeof(int));
 
     distortion.setControl(0, gain);
     distortion.setType(typeID);
+    
+    
+    distortion.setFilter1Freq(6666);
+    distortion.setFilter1Gain(0.5);
+    distortion.setFilter1Q(filterQ);    
+    distortion.setFilter1Type(3);
 
     hasLoadedState = true;
 }

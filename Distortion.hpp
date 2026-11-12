@@ -41,6 +41,7 @@ namespace krakendsp
             
             void setType(unsigned char index) override;
             void setControl(unsigned char index, float value) override;
+            float setControlNormalized(unsigned char index, float value) override;
 
             void setGain(float gain_);
             void setOversample(size_t oversample_);
@@ -65,6 +66,12 @@ namespace krakendsp
 
             void setFilter1Q(float q);
             float getFilter1Q();
+
+            float setGainNormalized(float value);
+
+            float setFilter1FreqNormalized(float value);
+            float setFilter1GainNormalized(float value);
+            float setFilter1QNormalized(float value);
             
         private:
             float gain = 0;

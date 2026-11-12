@@ -38,6 +38,7 @@ namespace krakendsp
 
             void setType(unsigned char index) override;
             void setControl(unsigned char index, float value) override;
+            float setControlNormalized(unsigned char index, float value) override;
 
             void setLength(float newLength);
             void setLengthNormalized(float newLengthNormalized);

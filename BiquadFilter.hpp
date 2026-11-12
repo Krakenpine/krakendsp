@@ -29,11 +29,15 @@ namespace krakendsp
 
             void setSamplerate(float samplerate_);
             void setFrequency(float frequency_);
+            float setFrequencyNormalized(float frequencyNormalized_);
             void setGain(float gain_);
+            float setGainNormalized(float gainNormalized_);
             void setQ(float q_);
+            float setQNormalized(float qNormalized_);
 
             void setType(unsigned char index) override;
             void setControl(unsigned char index, float value) override;
+            float setControlNormalized(unsigned char index, float value) override;
 
             FileType getFileType() const override;
             std::vector<AcceptedFile> getAcceptedFiles() const override;
@@ -48,6 +52,10 @@ namespace krakendsp
             float frequency = 1000.0f;
             float gain = 0.0f;
             float q = 0.707f;
+
+            float frequencyNormalized = 0.0f;
+            float gainNormalized = 0.0f;
+            float qNormalized = 0.0f;
 
             float Fs = 1.0f / 44100.0f;
 
@@ -77,30 +85,37 @@ namespace krakendsp
 
             std::vector<Log> log;
 
+            float frequencyMin = 10.0f;
+            float frequencyMax = 20000.0f;
+            float gainMin = -10.0f;
+            float gainMax = 10.0f;
+            float qMin = 0.0f;
+            float qMax = 10.0f;
+
             std::string name = "Biquad filter";
             std::vector<krakendsp::FXControl> controls = {
                 krakendsp::FXControl{
                     .name = "Frequency",
-                    .displayMultiplier = 1.0f,
+                    .displayMultiplier = frequencyMax - frequencyMin,
                     .unit = "Hz",
-                    .valueMin = 1.0f,
-                    .valueMax = 20000.0f,
+                    .valueMin = frequencyMin,
+                    .valueMax = frequencyMax,
                     .index = 0
                 },
                 krakendsp::FXControl{
                     .name = "Gain",
-                    .displayMultiplier = 1.0f,
+                    .displayMultiplier = gainMax - gainMin,
                     .unit = "dB",
-                    .valueMin = 0.0f,
-                    .valueMax = 1.0f,
+                    .valueMin = gainMin,
+                    .valueMax = gainMax,
                     .index = 1
                 },
                 krakendsp::FXControl{
                     .name = "Q",
-                    .displayMultiplier = 1.0f,
+                    .displayMultiplier = qMax - qMin,
                     .unit = "",
-                    .valueMin = 0.0f,
-                    .valueMax = 10.0f,
+                    .valueMin = qMin,
+                    .valueMax = qMax,
                     .index = 2
                 }
             };

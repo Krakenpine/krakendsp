@@ -167,6 +167,16 @@ void krakendsp::Delay::setControl(unsigned char index, float value) {
     }
 }
 
+float krakendsp::Delay::setControlNormalized(unsigned char index, float value) {
+    switch (index) {
+        case 0: setFeedback(value); break;
+        case 1: setMix(value); break;
+        case 2: setLengthNormalized(value); break;
+        default: break;
+    }
+    return getControlValue(index);
+}
+
 float krakendsp::Delay::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return getFeedback();

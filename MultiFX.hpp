@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 namespace krakendsp
 {
@@ -78,6 +79,21 @@ inline float scaleValue(float min, float max, float normalizedValue) {
     return scaledValue;
 }
 
+inline float deScaleValue(float min, float max, float scaledValue) {
+    float normalizedValue = (scaledValue - min) / (max - min);
+    return normalizedValue;
+}
+
+inline float scaleValuePower(float min, float max, float normalizedValue) {
+    float scaledValue = (max - min) * powf(normalizedValue, 2.0f) + min;
+    return scaledValue;
+}
+
+inline float deScaleValuePower(float min, float max, float scaledValue) {
+    float normalizedValue = powf((scaledValue - min) / (max - min), 0.5f);
+    return normalizedValue;
+}
+
 inline float samplesToMS(float samples, float samplerate) {
     return samples * 1000.0f / samplerate;
 }
@@ -105,6 +121,7 @@ class MultiFX {
         
         virtual void setType(unsigned char index) = 0;
         virtual void setControl(unsigned char index, float value) = 0;
+        virtual float setControlNormalized(unsigned char index, float value) = 0;
 
         virtual FileType getFileType() const = 0;
         virtual std::vector<AcceptedFile> getAcceptedFiles() const = 0;

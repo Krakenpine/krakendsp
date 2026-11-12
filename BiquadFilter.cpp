@@ -1,4 +1,5 @@
 #include "BiquadFilter.hpp"
+#include <algorithm>
 
 krakendsp::BiquadFilter::BiquadFilter() {
     calculateCoeffs();
@@ -18,21 +19,43 @@ void krakendsp::BiquadFilter::setSamplerate(float samplerate_) {
 }
 
 void krakendsp::BiquadFilter::setFrequency(float frequency_) {
-    frequency = frequency_;
-    if (frequency < 10.0f) {
-        frequency = 10.0f;
-    }
+    frequency = std::clamp(frequency_, frequencyMin, frequencyMax);
+    frequencyNormalized = deScaleValuePower(frequencyMin, frequencyMax, frequency);
     calculateCoeffs();
+}
+
+float krakendsp::BiquadFilter::setFrequencyNormalized(float frequencyNormalized_) {
+    frequencyNormalized = frequencyNormalized_;
+    frequency = scaleValuePower(frequencyMin, frequencyMax, frequencyNormalized);
+    calculateCoeffs();
+    return frequency;
 }
 
 void krakendsp::BiquadFilter::setGain(float gain_) {
-    gain = gain_;
+    gain = std::clamp(gain_, gainMin, gainMax);
     calculateCoeffs();
 }
 
-void krakendsp::BiquadFilter::setQ(float q_) {
-    q = q_;
+float krakendsp::BiquadFilter::setGainNormalized(float gainNormalized_) {
+    gainNormalized = gainNormalized_;
+    gain = scaleValuePower(gainMin, gainMax, gainNormalized);
     calculateCoeffs();
+    return gain;
+}
+
+void krakendsp::BiquadFilter::setQ(float q_) {
+    q = std::clamp(q_, qMin, qMax);
+    calculateCoeffs();
+}
+
+float krakendsp::BiquadFilter::setQNormalized(float qNormalized_) {
+    qNormalized = std::clamp(qNormalized_, 0.0f, 1.0f);
+    if (qNormalized >= 0.5f) {
+        float qTemp = (qNormalized - 0.5f) * 2.0f;
+    }
+    q = scaleValuePower(qMin, qMax, qNormalized);
+    calculateCoeffs();
+    return q;
 }
 
 std::string krakendsp::BiquadFilter::getName() const {
@@ -184,6 +207,15 @@ void krakendsp::BiquadFilter::setControl(unsigned char index, float value) {
         case 1: setGain(value); break;
         case 2: setQ(value); break;
         default: break;
+    }
+}
+
+float krakendsp::BiquadFilter::setControlNormalized(unsigned char index, float value) {
+    switch (index) {
+        case 0: return setFrequencyNormalized(value);
+        case 1: return setGainNormalized(value);
+        case 2: return setQNormalized(value);
+        default: return 0.0f;
     }
 }
 

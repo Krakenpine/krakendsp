@@ -116,7 +116,7 @@ void KrakenDSPDistortionAudioProcessorEditor::paint (juce::Graphics& g)
     filter1FreqSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, textBoxWidth, 20);
     filter1FreqSlider.setBounds(sliderLeft, y + 150, getWidth() - sliderLeft - 10, 20);
 
-    juce::String filter1TypeText = " Filter 1 type" + audioProcessor.distortion.getFilter1Type();
+    juce::String filter1TypeText = " Filter 1 type" + audioProcessor.distortion.getFilter1Type().name;
     filter1TypeSlider.setTextValueSuffix(filter1TypeText);
     filter1TypeSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, textBoxWidth, 20);
     filter1TypeSlider.setBounds(sliderLeft, y + 200, getWidth() - sliderLeft - 10, 20);

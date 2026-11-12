@@ -17,6 +17,11 @@ void krakendsp::Distortion::setGain(float gain_) {
     gain = gain_;
 }
 
+float krakendsp::Distortion::setGainNormalized(float value) {
+    setGain(value);
+    return gain;
+}
+
 void krakendsp::Distortion::setOversample(size_t oversample_) {
     if (oversample_ < 1 || oversample_ == 1) {
         oversample = Oversample::None;
@@ -326,6 +331,13 @@ void krakendsp::Distortion::setControl(unsigned char index, float value) {
     }
 }
 
+float krakendsp::Distortion::setControlNormalized(unsigned char index, float value) {
+    switch (index) {
+        case 0: return setGainNormalized(value);
+        default: return 0;
+    }
+}
+
 float krakendsp::Distortion::getControlValue(unsigned char index) const {
     switch (index) {
         case 0: return getGain();
@@ -500,6 +512,10 @@ void krakendsp::Distortion::setFilter1Freq(float freq) {
     filter1.setFrequency(freq);
 }
 
+float krakendsp::Distortion::setFilter1FreqNormalized(float value) {
+    return filter1.setFrequencyNormalized(value);
+}
+
 void krakendsp::Distortion::setFilter1Type(unsigned char type) {
     filter1.setType(type);
 }
@@ -517,12 +533,20 @@ void krakendsp::Distortion::setFilter1Gain(float gain) {
     filter1.setGain(gain);
 }
 
+float krakendsp::Distortion::setFilter1GainNormalized(float value) {
+    return filter1.setGainNormalized(value);
+}
+
 float krakendsp::Distortion::getFilter1Gain() {
     return filter1.getControlValueRaw(1);
 }
 
 void krakendsp::Distortion::setFilter1Q(float q) {
     filter1.setQ(q);
+}
+
+float krakendsp::Distortion::setFilter1QNormalized(float value) {
+    return filter1.setQNormalized(value);
 }
 
 float krakendsp::Distortion::getFilter1Q() {
